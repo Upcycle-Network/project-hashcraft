@@ -1,0 +1,43 @@
+services:
+  mariadb:
+    platform: linux/x86_64
+    image: mariadb
+    volumes:
+      - /mnt/SysHDD/mariadb:/var/lib/mysql
+    restart: always
+    ports:
+      - "3305:3306"
+    env_file:
+      - db.env
+    networks:
+      mysql-phpmyadmin:
+        ipv4_address: 172.20.128.1
+  phpmyadmin:
+    depends_on:
+      - mariadb
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8090:80"
+    env_file:
+      - db.env
+    networks:
+      mysql-phpmyadmin:
+        ipv4_address: 172.20.128.2
+  hashcraft:
+    image: hashcraft
+    restart: always
+    ports:
+      - "6436:6436"
+    depends_on:
+      - mariadb
+    networks:
+      mysql-phpmyadmin:
+        ipv4_address: 172.20.128.3
+
+networks:
+  mysql-phpmyadmin:
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
