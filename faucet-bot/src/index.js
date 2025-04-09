@@ -86,13 +86,17 @@ client.on("interactionCreate", async (mainInteraction) => {
                 }
               break;
               case 'modbal':
-                modbal.modify (mainInteraction, con);
+                if (mainInteraction.member.roles.cache.some(role => role.name === process.env.SERVER_OWNER)) modbal.modify (mainInteraction, con);
+                else {
+                index.setTitle("Oh, Hello Moderator").setColor(0xff0000).setDescription("Only the server owner can use this command.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
+                await mainInteraction.reply({ embeds: [index], ephemeral: true });}
               break;
             }
           } else {
             index.setTitle("Nice try, pleb").setColor(0xff0000).setDescription("You cannot use admin commands when you're not one, duh.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
             await mainInteraction.reply({ embeds: [index], ephemeral: true });
           }
+          
           break;
       }
   } else {
