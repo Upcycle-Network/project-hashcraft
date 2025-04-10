@@ -24,6 +24,7 @@ module.exports = {
         let data = "";
         res.on("data", (chunk) => {data += chunk;});
         res.on("end", async () => {
+        console.log (data);
         const json = JSON.parse(data);
         waifu.setTimestamp().setFooter({ text: `Powered by ${host[i]}`, iconURL: process.env.ICON });
         switch (i){
