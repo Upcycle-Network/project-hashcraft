@@ -7,7 +7,7 @@ function random (min, max) {
     const maxFloored = Math.floor(max);
     return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
   }
-  const eyebleach = new EmbedBuilder().setTitle("Eyebleach").setColor(0xf18701);
+  const eyebleach = new EmbedBuilder().setColor(0xf18701);
 module.exports = {
   bless: async function (embed) {
     const i = random (0, 4);
@@ -20,16 +20,16 @@ module.exports = {
         eyebleach.setTimestamp();
         switch (i){
             case 0:
-                eyebleach.setImage(json.url).setFooter({ text: `Powered by api.thecatapi.com`, iconURL: process.env.ICON });
+                eyebleach.setImage(json.url).setTitle("Catto").setFooter({ text: `Powered by api.thecatapi.com`, iconURL: process.env.ICON });
                 break;
             case 1:
-                eyebleach.setImage(json.url).setFooter({ text: `Powered by random.dog`, iconURL: process.env.ICON });
+                eyebleach.setImage(json.url).setTitle("Pupper").setFooter({ text: `Powered by random.dog`, iconURL: process.env.ICON });
                 break;
             case 2:
-                eyebleach.setImage(json.url).setFooter({ text: `${json.message}`, iconURL: process.env.ICON });
+                eyebleach.setImage(json.url).setTitle("Ducc").setFooter({ text: `${json.message}`, iconURL: process.env.ICON });
                 break;
             case 3:
-                eyebleach.setImage(json.image).setFooter({ text: `Powered by randomfox.ca`, iconURL: process.env.ICON });
+                eyebleach.setImage(json.image).setTitle("Fox").setFooter({ text: `Powered by randomfox.ca`, iconURL: process.env.ICON });
                 break;
         }
         await embed.followUp({embeds: [eyebleach]});
