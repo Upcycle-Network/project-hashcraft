@@ -11,7 +11,7 @@ function random (min, max) {
   const waifu = new EmbedBuilder().setTitle("Random Anime Waifu/Husbando").setColor(0xf18701);
 module.exports = {
   moe: async function (embed) {
-    const i = random (0, 4);
+    const i = random (0, 5);
     await embed.deferReply();
     const options = {
         hostname: host[i],
