@@ -22,30 +22,35 @@ module.exports = {
         }
     };
     http.get(options, (res) => {
-        let data = "";
-        res.on("data", (chunk) => {data += chunk;});
+        let json = "";
+        res.on("json.image.large", (chunk) => {json.image.large += chunk;});
         res.on("end", async () => {
-        console.log (data);
-        const json = JSON.parse(data);
+        const json = JSON.parse(json.image.large);
         waifu.setTimestamp().setFooter({ text: `Powered by ${host[i]}`, iconURL: process.env.ICON });
         switch (i){
             case 0:
                 waifu.setImage(json.image.large);
+                console.log (json.image.large);
                 break;
             case 1:
                 waifu.setImage(json[0].url);
+                console.log (json[0].url);
                 break;
             case 2:
                 waifu.setImage(json.url);
+                console.log (json.url);
                 break;
             case 3:
                 waifu.setImage(json.url);
+                console.log (json.url);
                 break;
             case 4:
                 waifu.setImage(json.url);
+                console.log (json.url);
                 break;
         }
         await embed.followUp({embeds: [waifu]});
+        
     });
     }).on("error", async (e) => {
         waifu.setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
