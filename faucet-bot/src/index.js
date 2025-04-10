@@ -72,7 +72,7 @@ client.on("interactionCreate", async (mainInteraction) => {
         case "kanye":
           kanye.west(mainInteraction);
           break;
-        case "insult":
+        case "insultme":
           insult.me(mainInteraction);
           break;
         case "quote":

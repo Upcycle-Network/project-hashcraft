@@ -100,7 +100,7 @@ const commands = [
     },
     {
         name: 'insultme',
-        description: `Funny black nazi starts yapping on Elon Musk's propaganda website`,
+        description: `You're quite the masochist huh`,
     },
     {
         name: 'comedy',

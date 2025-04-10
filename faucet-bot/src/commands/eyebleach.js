@@ -20,16 +20,16 @@ module.exports = {
         eyebleach.setTimestamp();
         switch (i){
             case 0:
-                eyebleach.setImage(json.url).setTitle("Catto").setFooter({ text: `Powered by api.thecatapi.com`, iconURL: process.env.ICON });
+                eyebleach.setTitle("Catto").setImage(json.url).setFooter({ text: `Powered by api.thecatapi.com`, iconURL: process.env.ICON });
                 break;
             case 1:
-                eyebleach.setImage(json.url).setTitle("Pupper").setFooter({ text: `Powered by random.dog`, iconURL: process.env.ICON });
+                eyebleach.setTitle("Pupper").setImage(json.url).setFooter({ text: `Powered by random.dog`, iconURL: process.env.ICON });
                 break;
             case 2:
-                eyebleach.setImage(json.url).setTitle("Ducc").setFooter({ text: `${json.message}`, iconURL: process.env.ICON });
+                eyebleach.setTitle("Ducc").setImage(json.url).setFooter({ text: `${json.message}`, iconURL: process.env.ICON });
                 break;
             case 3:
-                eyebleach.setImage(json.image).setTitle("Fox").setFooter({ text: `Powered by randomfox.ca`, iconURL: process.env.ICON });
+                eyebleach.setTitle("Fox").setImage(json.image).setFooter({ text: `Powered by randomfox.ca`, iconURL: process.env.ICON });
                 break;
         }
         await embed.followUp({embeds: [eyebleach]});
