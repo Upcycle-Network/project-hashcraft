@@ -5,6 +5,7 @@ module.exports = {
     const help = new EmbedBuilder().setTitle("Help Section").setColor(0xf18701).addFields(
       {
         name: "Faucet Related Commands:",
+        value: " ",
       },
         {
           name: "/help",
@@ -48,6 +49,7 @@ module.exports = {
         },
         {
           name: "Fun",
+          value: " ",
         },
         {
           name: "/buzzwords",
