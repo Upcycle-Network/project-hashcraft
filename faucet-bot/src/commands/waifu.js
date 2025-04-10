@@ -31,23 +31,18 @@ module.exports = {
         switch (i){
             case 0:
                 waifu.setImage(json.image.large);
-                console.log (json.image.large);
                 break;
             case 1:
                 waifu.setImage(json[0].url);
-                console.log (json[0].url);
                 break;
             case 2:
                 waifu.setImage(json.url);
-                console.log (json.url);
                 break;
             case 3:
                 waifu.setImage(json.images[0].url);
-                console.log (json.images[0].url);
                 break;
             case 4:
                 waifu.setImage(json.results[0].url);
-                console.log (json.results[0].url);
                 break;
         }
         await embed.followUp({embeds: [waifu]});
