@@ -42,8 +42,8 @@ module.exports = {
                 console.log (json.url);
                 break;
             case 3:
-                waifu.setImage(json.url);
-                console.log (json.url);
+                waifu.setImage(json.images[0].url);
+                console.log (json.images[0].url);
                 break;
             case 4:
                 waifu.setImage(json.results[0].url);

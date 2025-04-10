@@ -20,7 +20,7 @@ module.exports = {
         eyebleach.setTimestamp();
         switch (i){
             case 0:
-                eyebleach.setTitle("Catto").setImage(json.url).setFooter({ text: `Powered by api.thecatapi.com`, iconURL: process.env.ICON });
+                eyebleach.setTitle("Catto").setImage(json[0].url).setFooter({ text: `Powered by api.thecatapi.com`, iconURL: process.env.ICON });
                 break;
             case 1:
                 eyebleach.setTitle("Pupper").setImage(json.url).setFooter({ text: `Powered by random.dog`, iconURL: process.env.ICON });
