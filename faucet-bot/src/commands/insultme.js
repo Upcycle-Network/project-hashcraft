@@ -5,7 +5,7 @@ const insult = new EmbedBuilder().setTitle("An Insult for You").setColor(0xf1870
 module.exports = {
   me: async function (embed) {
     await embed.deferReply();
-    https.get('https://evilinsult.com/generate_insult.php?lang=en&type=json', (res) => {
+    https.get(`https://evilinsult.com/generate_insult.php?lang=en&type=json`, (res) => {
         let data = "";
         res.on("data", (chunk) => {data += chunk;});
         res.on("end", async () => {
