@@ -46,8 +46,8 @@ module.exports = {
                 console.log (json.url);
                 break;
             case 4:
-                waifu.setImage(json.url);
-                console.log (json.url);
+                waifu.setImage(json.results[0].url);
+                console.log (json.results[0].url);
                 break;
         }
         await embed.followUp({embeds: [waifu]});
