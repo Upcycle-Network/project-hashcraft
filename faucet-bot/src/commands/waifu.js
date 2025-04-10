@@ -22,10 +22,11 @@ module.exports = {
         }
     };
     http.get(options, (res) => {
-        let json = "";
-        res.on("json.image.large", (chunk) => {json.image.large += chunk;});
+        let data = "";
+        res.on("data", (chunk) => {data += chunk;});
         res.on("end", async () => {
-        const json = JSON.parse(json.image.large);
+        
+        const json = JSON.parse(data);
         waifu.setTimestamp().setFooter({ text: `Powered by ${host[i]}`, iconURL: process.env.ICON });
         switch (i){
             case 0:
@@ -50,7 +51,6 @@ module.exports = {
                 break;
         }
         await embed.followUp({embeds: [waifu]});
-        
     });
     }).on("error", async (e) => {
         waifu.setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
