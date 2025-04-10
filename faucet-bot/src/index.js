@@ -15,6 +15,13 @@ const restart = require('./commands/restart');
 const modbal = require('./commands/modbal');
 const mdu = require('./commands/pay');
 const flist = require('./commands/faucetlist');
+const eyebleach = require('./commands/eyebleach');
+const waifu = require('./commands/waifu');
+const buzzwords = require('./commands/buzzwords');
+const comedy = require('./commands/comedy');
+const insult = require('./commands/insultme');
+const kanye = require('./commands/kanye');
+const quote = require('./commands/quote');
 const con = mysql.createPool({
   multipleStatements: true,
   supportBigNumbers: true, 
@@ -49,6 +56,27 @@ client.on("interactionCreate", async (mainInteraction) => {
           break;
         case "stats":
           stats.send(mainInteraction, con);
+          break;
+        case "eyebleach":
+          eyebleach.bless(mainInteraction);
+          break;
+        case "waifu":
+          waifu.moe(mainInteraction);
+          break;
+        case "buzzwords":
+          buzzwords.generate(mainInteraction);
+          break;
+        case "comedy":
+          comedy.kardo(mainInteraction);
+          break;
+        case "kanye":
+          kanye.west(mainInteraction);
+          break;
+        case "insult":
+          insult.me(mainInteraction);
+          break;
+        case "quote":
+          quote.person(mainInteraction);
           break;
         case 'faucetlist':
           flist.send(mainInteraction);

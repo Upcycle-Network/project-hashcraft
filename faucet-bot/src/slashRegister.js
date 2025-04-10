@@ -95,8 +95,24 @@ const commands = [
         description: 'Sends an image of a random anime waifu because why not',
     },
     {
-        name: 'wordsearch',
-        description: 'Search the Merriam-Webster Dictionary for a word.',
+        name: 'kanye',
+        description: `Funny black nazi starts yapping on Elon Musk's propaganda website`,
+    },
+    {
+        name: 'insultme',
+        description: `Funny black nazi starts yapping on Elon Musk's propaganda website`,
+    },
+    {
+        name: 'comedy',
+        description: `Toes who Nose`,
+    },
+    {
+        name: 'buzzwords',
+        description: `Ah yes more corporate bullshit to slide down my throat`,
+    },
+    {
+        name: 'quote',
+        description: `Motivation from great people told by a rock who is forced to think`,
     },
     {
         name: 'modbal',
@@ -118,7 +134,7 @@ const commands = [
             },
         ],
     },
-    {
+    /*{
         name: 'pay',
         description: "Pay a user in ⧈ mDU",
         options: [
@@ -136,8 +152,10 @@ const commands = [
                 min_value: 0,
                 max_value: 1000000,
             },
+            
         ],
     },
+    */
 ];
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 (async () => {
@@ -149,22 +167,3 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
         console.log(`Error: ${error}`);
     }
 })();
-
-/*api's to add
-https://kanye.rest
-https://evilinsult.com/api/
-https://sv443.net/jokeapi/v2/
-https://github.com/surhud004/Foodish#readme
-https://coffee.alexflipnote.dev
-https://github.com/sameerkumar18/geek-joke-api
-https://humorapi.com
-https://official-joke-api.appspot.com
-https://icanhazdadjoke.com/api
-https://github.com/sameerkumar18/corporate-bs-generator-api
-https://www.quoterism.com/developer
-https://favqs.com/api
-https://api.adviceslip.com
-https://github.com/lukePeavey/quotable
-https://github.com/mudroljub/programming-quotes-api
-https://quotesondesign.com/api/
-https://github.com/tlcheah2/stoic-quote-lambda-public-api*/

@@ -13,7 +13,7 @@ module.exports = {
       userid = embed.options.get("of-user").value;
       bal.setDescription(`This user has not linked their Duino-Coin Account.`);
     }
-    if (embed.channelId === process.env.BOT_CHANNEL) {
+    if (embed.channelId === process.env.BOT_CHANNEL || embed.channelId === process.env.TEST_CHANNEL) {
     con.getConnection(async function (err, balance) {
       if (err) {
         bal.setAuthor({ name: process.env.BOT_NAME + ' Faucet', iconURL: process.env.FAIL }).setTitle("Error: Unable to connect to DB.").setDescription("Log: \n\`\`\`\n" + err + "\n\`\`\`\nPlease try again.").setColor(0xff0000);

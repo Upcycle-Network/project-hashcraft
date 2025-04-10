@@ -23,7 +23,7 @@ module.exports = {
             payembed.setAuthor({ name: process.env.BOT_NAME + ' Payments', iconURL: process.env.FAIL }).setTitle("Error: Unable to connect to DB.").setDescription("Log: \n\`\`\`\n" + err + "\n\`\`\`\nPlease try again.").setColor(0xff0000);
             await embed.followUp({ embeds: [payembed] });
             } else {
-              paycon.query(`insert into Faucet (userid) values (${userid}) on duplicate key update userid = ${userid};\nselect wallet_name, mdu_bal from Faucet where userid = ${userid};`, [1, 2], async function (err, result) {
+              paycon.query(`insert into Faucet (userid) values (${userid}) on duplicate key update userid = ${userid}; select wallet_name, mdu_bal from Faucet where userid = ${userid};`, [1, 2], async function (err, result) {
                   if (!err) {
                     if (result[0].wallet_name == null) {
                         payembed.setAuthor({ name: process.env.BOT_NAME + ' Payments', iconURL: process.env.FAIL }).setTitle(`Account not linked yet`).setDescription(`You haven't linked your Duino-Coin Account to this discord user. Run /link to do so.`).setColor(0xff0000);

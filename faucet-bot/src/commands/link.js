@@ -8,7 +8,7 @@ module.exports = {
     const cancel = new ButtonBuilder().setCustomId("cancel").setLabel("Cancel").setStyle(ButtonStyle.Danger).setDisabled(false);
     const remove = new ButtonBuilder().setCustomId("remove").setLabel("Remove").setStyle(ButtonStyle.Danger).setDisabled(false);
     await embed.deferReply();
-    if (embed.channelId === process.env.BOT_CHANNEL) {
+    if (embed.channelId === process.env.BOT_CHANNEL || embed.channelId === process.env.TEST_CHANNEL) {
     const u = userid;
     con.getConnection(async function (err, link) {
       if (err) {

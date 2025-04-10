@@ -6,7 +6,7 @@ module.exports = {
   transfer: async function (embed, userid, con) {
     await embed.deferReply();
     const deposit = new EmbedBuilder().setAuthor({ name: `${process.env.BOT_NAME} Faucet`, iconURL: process.env.PROCESSING }).setTitle("Please Wait...").setColor(0xf18701).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-    if (embed.channelId === process.env.BOT_CHANNEL) {
+    if (embed.channelId === process.env.BOT_CHANNEL || embed.channelId === process.env.TEST_CHANNEL) {
       con.getConnection(async function (err, depfunc) {
         if (!err) {
           if (embed.options.get("amount").value <= 0) {

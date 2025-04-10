@@ -4,7 +4,7 @@ const {EmbedBuilder} = require("discord.js");
 module.exports = {
   drop: async function (embed, userid, con) {
     const claimbox = new EmbedBuilder().setAuthor({ name: `${process.env.BOT_NAME} Faucet`, iconURL: process.env.PROCESSING }).setTitle("Please Wait...").setColor(0xf18701).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-      if (embed.channelId === process.env.BOT_CHANNEL) {
+      if (embed.channelId === process.env.BOT_CHANNEL || embed.channelId === process.env.TEST_CHANNEL) {
       await embed.deferReply();  
     const u = userid;
     con.getConnection(async function (err, claim) {
