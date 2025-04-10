@@ -4,7 +4,7 @@ module.exports = {
   send: async function (embed) {
     const help = new EmbedBuilder().setTitle("Help Section").setColor(0xf18701).addFields(
       {
-        name: "Faucet Related Commands:",
+        name: "► Faucet Related Commands:",
         value: " ",
       },
         {
@@ -48,7 +48,7 @@ module.exports = {
           inline: true,
         },
         {
-          name: `\n\n\nFun Commands:`,
+          name: `► Fun Commands:`,
           value: " ",
         },
         {
