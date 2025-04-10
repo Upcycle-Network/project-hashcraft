@@ -48,7 +48,7 @@ module.exports = {
           inline: true,
         },
         {
-          name: `\nFun`,
+          name: `\n\n\nFun Commands:`,
           value: " ",
         },
         {
