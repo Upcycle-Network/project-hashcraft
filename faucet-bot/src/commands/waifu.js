@@ -11,13 +11,14 @@ function random (min, max) {
   const waifu = new EmbedBuilder().setTitle("Random Anime Waifu/Husbando").setColor(0xf18701);
 module.exports = {
   moe: async function (embed) {
-    const i = random (0, 5);
+    const i = random (0, 4);
     await embed.deferReply();
     const options = {
         hostname: host[i],
         path: path[i][random (0, path[i].length)],
         headers: {
-            Authorization: process.env.WAIFUIT_ID
+            'Authorization': process.env.WAIFUIT_ID,
+            'User-Agent': `${process.env.BOT_NAME} ${process.env.BOT_VERSION}`
         }
     };
     http.get(options, (res) => {
