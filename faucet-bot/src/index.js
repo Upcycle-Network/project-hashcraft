@@ -45,7 +45,7 @@ var rbt;
 client.on("interactionCreate", async (mainInteraction) => {
   if (!mainInteraction.isChatInputCommand()) return;
   client.user.setPresence({ status: 'online' });
-  if (mainInteraction.guild === null){
+  if (mainInteraction.guild === null && mainInteraction.commandName != "waifu"){
     index.setTitle("Invalid Interaction").setColor(0xff0000).setDescription(`Ew why are you sliding into my DM's\nThese commands are only usable in the ${process.env.BOT_NAME} Server`).setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
     await mainInteraction.reply({ embeds: [index] });
   } else {
