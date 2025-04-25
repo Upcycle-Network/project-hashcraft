@@ -92,7 +92,11 @@ client.on("interactionCreate", async (mainInteraction) => {
           claim.drop(mainInteraction, mainInteraction.user.id, con);
           break;
         case 'deposit':
-          deposit.transfer(mainInteraction, mainInteraction.user.id, con);
+          if (process.env.MAINTAINENCE){
+            index.setTitle("Command Temporarily Disabled").setColor(0xff0000).setDescription("The Bot is running on a backup server due to maintainence of main server and hence this command is non-functional.\nYou can still use the other commands.\n Sorry for the inconvenience.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
+            await mainInteraction.reply({ embeds: [index], ephemeral: true });
+          }
+          else deposit.transfer(mainInteraction, mainInteraction.user.id, con);
           break;
         case 'balance':
           balance.check(mainInteraction, mainInteraction.user.id, con);
