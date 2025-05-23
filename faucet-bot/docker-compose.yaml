@@ -26,6 +26,7 @@ services:
 #        ipv4_address: 172.20.128.2
   hashcraft:
     image: hashcraft
+    container_name: hashcraft
     restart: always
 #    ports:
 #      - "6436:6436"
