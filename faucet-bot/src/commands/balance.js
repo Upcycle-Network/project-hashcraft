@@ -21,14 +21,15 @@ module.exports = {
       } else {
         balance.query(`insert into Faucet (userid) values (${userid}) on duplicate key update userid = ${userid}`, async function (err) {
             if (!err) {
-              balance.query(`select wallet_name, mdu_bal from Faucet where userid = ${userid}`, async function (err, result) {
+              balance.query(`select wallet_name, mdu_bal, streak from Faucet where userid = ${userid}`, async function (err, result) {
                   if (!err) {
                     if (result[0].wallet_name == null) {
                       bal.setAuthor({ name: process.env.BOT_NAME + ' Faucet', iconURL: process.env.FAIL }).setTitle(`Account not linked yet`).setColor(0xff0000);
                       await embed.followUp({ embeds: [bal] });
                     } else {
                       const balc = result[0].mdu_bal;
-                      bal.setDescription(`<@${userid}>'s Current Balance: \`⧈${balc}\`\nDUCO Balance:\`ↁ ${balc / 100}\``).setAuthor({ name: process.env.BOT_NAME + ' Faucet', iconURL: process.env.ICON });
+                      const streak = result[0].streak
+                      bal.setDescription(`<@${userid}>'s Current Balance: \`⧈${balc}\`\nDUCO Balance:\`ↁ ${balc / 100}\`\nClaim Streak: \`${streak}\``).setAuthor({ name: process.env.BOT_NAME + ' Faucet', iconURL: process.env.ICON });
                       await embed.followUp({ embeds: [bal] });
                     }
                   } else {
@@ -46,7 +47,7 @@ module.exports = {
     });
   } else {
       bal.setTitle("Use the correct channel dammit").setColor(0xff0000).setDescription(`You can only use this command on <#${process.env.BOT_CHANNEL}>.`).setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-      await embed.followUp({ embeds: [bal], ephemeral: true });
+      await embed.followUp({ embeds: [bal], flags: MessageFlags.Ephemeral });
     }
   }
 }

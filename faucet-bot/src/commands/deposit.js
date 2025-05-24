@@ -28,8 +28,8 @@ module.exports = {
                           data += chunk;
                         });
                         res.on("end", async () => {
+                          try {
                           const json = JSON.parse(data);
-                          console.log(data);
                           if (json.success) {
                             const txid = String(json.result).split(",")[2];
                             deposit.setAuthor({ name: `${process.env.BOT_NAME} Faucet`, iconURL: process.env.SUCCESS }).setTitle("Deposit Successful").setColor(0x00ff00).setDescription(`Successfully converted \`⧈${dep}\` into \`${dep / 100} ↁ\` and sent to Account: ${recip}\nTxID: [${txid}](https://explorer.duinocoin.com?search=${txid})`).setTimestamp();
@@ -42,12 +42,14 @@ module.exports = {
                             deposit.setAuthor({ name: `${process.env.BOT_NAME} Faucet`, iconURL: process.env.FAIL }).setTitle("Deposit Failed").setColor(0xff0000).setDescription(`An API Error Occured. Please try again.`).setTimestamp();
                           }
                           await embed.followUp({ embeds: [deposit] });
+                          } catch (e){
+                            deposit.setDescription("Error while fetching API Request: ```\n" + e +"\n```").setTitle("An API Error Occured. Please try again.").setAuthor({ name: `${process.env.BOT_NAME} Faucet`, iconURL: process.env.FAIL }).setColor(0xff0000).setTimestamp();
+                            await embed.followUp({embeds: [deposit],});
+                          }
                         });
                       }).on("error", async (e) => {
                         deposit.setDescription("Error while fetching API Request: ```\n" +e +"\n```").setTitle("An API Error Occured. Please try again.").setAuthor({ name: `${process.env.BOT_NAME} Faucet`, iconURL: process.env.FAIL }).setColor(0xff0000).setTimestamp();
-                        await embed.followUp({
-                          embeds: [deposit],
-                        });
+                        await embed.followUp({embeds: [deposit],});
                       });
                     }
                     else {
@@ -72,7 +74,7 @@ module.exports = {
       });
     } else {
       deposit.setTitle("Use the correct channel dammit").setColor(0xff0000).setDescription(`You can only use this command on <#${process.env.BOT_CHANNEL}>.`).setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-      await embed.followUp({ embeds: [deposit], ephemeral: true });
+      await embed.followUp({ embeds: [deposit], flags: MessageFlags.Ephemeral });
     }
   }
 }

@@ -94,7 +94,7 @@ client.on("interactionCreate", async (mainInteraction) => {
         case 'deposit':
         if (process.env.MAINTAINENCE === 'true'){
             index.setTitle("Command Temporarily Disabled").setColor(0xff0000).setDescription("The Bot is running on a backup server due to maintainence of main server and hence this command is non-functional.\nYou can still use the other commands.\n Sorry for the inconvenience.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-            await mainInteraction.reply({ embeds: [index], ephemeral: true });
+            await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
           }
           else {
             deposit.transfer(mainInteraction, mainInteraction.user.id, con);
@@ -127,19 +127,19 @@ client.on("interactionCreate", async (mainInteraction) => {
                 if (mainInteraction.member.roles.cache.some(role => role.name === process.env.SERVER_OWNER)) modbal.modify (mainInteraction, con);
                 else {
                 index.setTitle("Oh, Hello Moderator").setColor(0xff0000).setDescription("Only the server owner can use this command.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-                await mainInteraction.reply({ embeds: [index], ephemeral: true });}
+                await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });}
               break;
             }
           } else {
             index.setTitle("Nice try, pleb").setColor(0xff0000).setDescription("You cannot use admin commands when you're not one, duh.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-            await mainInteraction.reply({ embeds: [index], ephemeral: true });
+            await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
           }
           
           break;
       }
   } else {
     index.setTitle("User not verified").setColor(0xff0000).setDescription(`Whoa there, we don't know whether you're a human or not.\nVerify yourself in the <#${process.env.VERIFICATION_CHANNEL}> channel`).setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-    await mainInteraction.reply({ embeds: [index], ephemeral: true });
+    await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
   }
   }
   if (!rbt){
@@ -164,29 +164,34 @@ module.exports = {
     const guild = await client.guilds.fetch(process.env.GUILD_ID);
     con.getConnection(async function (err, dm) {
       if (err) console.log(err); else {
-        dm.query(`select userid, streak from Faucet where last_used != '${time.format("YYYY-MM-DD")}'`, async function (err, result) {
-          if (err) console.log(err); else {
-            for (i = 0; i <= (result.length - 1); i++){
+        dm.query(`select userid, streak from Faucet where reminder != '${time.format("YYYY-MM-DD")}'`, async function (err, result) {
+          if (err) console.log(err); else if (result.length === 0){
+            console.log (`No Users to Notify.`);
+          } else {
               index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[i].streak}\` 🔥!\nHead on over to <#1267863776925847592> to claim your daily drop.`).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-              const uid = result[i].userid;
+              const uid = result[0].userid;
               try{
                 await guild.members.fetch(uid)
                 .then((member) => {
                   if (member == false){
-                    console.log ("This user has left the server.");
+                    console.log (`${uid}: This user has left the server.`);
                   } else {
                     console.log (`Sent claim reminder to user ${uid}, streak ${result[i].streak}`);
-                    setTimeout(() => {client.users.send(uid, { embeds: [index] }).catch((err)=>{console.log ("This user does not allow DM's from server members.")});}, 500);
+                    client.users.send(uid, { embeds: [index] }).catch((err)=>{console.log ("This user does not allow DM's from server members.")});
                   }
-                }).catch ((err) => {console.log ("This user has left the server.");});
+                }).catch ((err) => {console.log (`${uid}: This user has left the server.`);});
             } catch (e){
-              console.log ("This user has left the server.");
+              console.log (`${uid}: This user has left the server.`);
             }
-          }
-        }
+            dm.query(`update Faucet set reminder = '${time.format("YYYY-MM-DD")}' where Faucet.userid = ${uid}`, async function (err, result){
+              if (err){
+                console.log (`Error accessing DB: ${err}`);
+              }
+             });
+           }
         });
       }
-      dm.release();
+    dm.release();
     });
   }
 }

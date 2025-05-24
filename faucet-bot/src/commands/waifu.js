@@ -30,16 +30,16 @@ module.exports = {
         waifu.setTimestamp().setFooter({ text: `Powered by ${host[i]}`, iconURL: process.env.ICON });
         switch (i){
             case 0:
-                waifu.setImage(json.image.large);
+                waifu.setImage(`SPOILER_${json.image.large}`);
                 break;
             case 1:
-                waifu.setImage(json.url);
+                waifu.setImage(`SPOILER_${json.url}`);
                 break;
             case 2:
-                waifu.setImage(json.images[0].url);
+                waifu.setImage(`SPOILER_${json.images[0].url}`);
                 break;
             case 3:
-                waifu.setImage(json.results[0].url);
+                waifu.setImage(`SPOILER_${json.results[0].url}`);
                 break;
         }
         await embed.followUp({embeds: [waifu]});
