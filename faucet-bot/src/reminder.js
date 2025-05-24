@@ -1,5 +1,6 @@
 const http = require("http");
 const process = require("process");
+require('dotenv').config({ path: require('find-config')('.env') });
 const postData = JSON.stringify({"event": "reminder", "start": true})
 const options = {
 hostname: process.ENV.EVENT_IP,

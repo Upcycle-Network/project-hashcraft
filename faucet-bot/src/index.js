@@ -149,7 +149,7 @@ client.on("interactionCreate", async (mainInteraction) => {
 });
 console.log("Connecting...");
 client.on("ready", async (c) => {
-  console.log("Welcome to HashCraft.");
+  console.log("Hashcraft Discord bot is online.");
   client.user.setPresence({
     activities: [{
       name: '/help',
