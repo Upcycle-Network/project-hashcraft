@@ -1,2 +1,2 @@
 const index = require("./index.js");
-await index.notify();
+index.notify();
