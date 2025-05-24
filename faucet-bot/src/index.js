@@ -159,19 +159,19 @@ client.on("ready", async (c) => {
 });
 client.login(process.env.TOKEN);
 module.exports = {
-  notify: function(){
+  notify: async function(){
     const time = dayjs();
-    const guild = client.guilds.fetch(process.env.GUILD_ID);
-    con.getConnection(function (err, dm) {
+    const guild = await client.guilds.fetch(process.env.GUILD_ID);
+    con.getConnection(async function (err, dm) {
       if (err) console.log(err); else {
-        dm.query(`select userid, streak from Faucet where reminder != '${time.format("YYYY-MM-DD")}'`, function (err, result) {
+        dm.query(`select userid, streak from Faucet where reminder != '${time.format("YYYY-MM-DD")}'`, async function (err, result) {
           if (err) console.log(err); else if (result.length === 0){
             console.log (`No Users to Notify.`);
           } else {
               index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[i].streak}\` 🔥!\nHead on over to <#1267863776925847592> to claim your daily drop.`).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
               const uid = result[0].userid;
               try{
-                guild.members.fetch(uid)
+                await guild.members.fetch(uid)
                 .then((member) => {
                   if (member == false){
                     console.log (`${uid}: This user has left the server.`);
@@ -183,7 +183,7 @@ module.exports = {
             } catch (e){
               console.log (`${uid}: This user has left the server.`);
             }
-            dm.query(`update Faucet set reminder = '${time.format("YYYY-MM-DD")}' where Faucet.userid = ${uid}`, function (err, result){
+            dm.query(`update Faucet set reminder = '${time.format("YYYY-MM-DD")}' where Faucet.userid = ${uid}`, async function (err, result){
               if (err){
                 console.log (`Error accessing DB: ${err}`);
               }
@@ -192,7 +192,7 @@ module.exports = {
         });
       }
     dm.release();
+    process.exit(22);
     });
-    return 1;
   }
 }
