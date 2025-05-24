@@ -195,6 +195,7 @@ module.exports = {
     dm.release();
     });
     });
-    return end;
+    end.then(process.exit(22));
+    //return end;
   }
 }
