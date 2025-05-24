@@ -1,2 +1,2 @@
-const notify = require("./index.js");
-notify();
+const index = require("./index.js");
+await index.notify();
