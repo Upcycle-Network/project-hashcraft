@@ -1,2 +1,2 @@
 const index = require("./index.js");
-index.notify();
+const wait = new Promise(index.notify()).finally(process.exit(22));
