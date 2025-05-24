@@ -193,5 +193,6 @@ module.exports = {
       }
     dm.release();
     });
+    return 1;
   }
 }
