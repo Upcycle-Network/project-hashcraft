@@ -160,6 +160,7 @@ client.on("ready", async (c) => {
 });
 client.login(process.env.TOKEN);
 http.createServer((req, res) => {
+  console.log(`Event Server listening on port 8080.`);
  if (req.method === 'POST' && req.url === '/events') {
     let body = '';
     req.on('data', chunk => {
@@ -217,7 +218,4 @@ http.createServer((req, res) => {
   } else {
    console.log("No events found.");
   }
-});
-server.listen(8080, () => {
-  console.log(`Event Server listening on port 8080.`);
-});
+}).listen(8080);
