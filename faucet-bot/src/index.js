@@ -160,6 +160,7 @@ client.on("ready", async (c) => {
 client.login(process.env.TOKEN);
 module.exports = {
   notify: async function(){
+    let end = new Promise(async function(resolve, reject){
     const time = dayjs();
     const guild = await client.guilds.fetch(process.env.GUILD_ID);
     con.getConnection(async function (err, dm) {
@@ -193,5 +194,7 @@ module.exports = {
       }
     dm.release();
     });
+    });
+    return end;
   }
 }

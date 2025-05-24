@@ -1,3 +1,3 @@
 import { notify } from './index.js';
-await notify();
-setTimeout(process.exit(22), 7500);
+ret = await notify();
+ret.then(process.exit(22));
