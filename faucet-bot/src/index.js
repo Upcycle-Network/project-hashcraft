@@ -156,11 +156,9 @@ client.on("ready", async (c) => {
     }],
     status: 'idle'
   });
-});
-client.login(process.env.TOKEN);
-module.exports = {
-  notify: async function(){
-    const time = dayjs();
+setTimeout(async () => {
+
+const time = dayjs();
     const guild = await client.guilds.fetch(process.env.GUILD_ID);
     con.getConnection(async function (err, dm) {
       if (err) console.log(err); else {
@@ -193,5 +191,13 @@ module.exports = {
       }
     dm.release();
     });
+
+}, 15000);
+
+});
+client.login(process.env.TOKEN);
+module.exports = {
+  notify: async function(){
+    
   }
 }
