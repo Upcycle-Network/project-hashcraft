@@ -17,7 +17,7 @@ module.exports = {
     ram = mem.rss/1048576;
     ram = Math.round(ram);
     await embed.deferReply();
-    const stats = new EmbedBuilder().setTitle("Bot Statistics").setColor(0xf18701).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp().setImage(process.env.SERVER)
+    const stats = new EmbedBuilder().setTitle("Bot Statistics").setThumbnail(process.env.LOGO).setColor(0xf18701).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp().setImage(process.env.SERVER)
     .addFields(
       { name: "Host", value: process.env.STAT_SERVER, inline: true },
       { name: "RAM Usage", value: ram + "MB", inline: true },
