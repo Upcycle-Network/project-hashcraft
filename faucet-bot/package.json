@@ -3,6 +3,7 @@
   "version": "0.5.8 Stable",
   "description": "A Powerful and modern Discord Bot that allows integration of Duinocoin to Discord.",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "start": "npm i && node src/slashRegister.js && node ."
   },
