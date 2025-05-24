@@ -1,5 +1,6 @@
 require('dotenv').config({ path: require('find-config')('.env') });
 const { Client, IntentsBitField, EmbedBuilder, ActivityType } = require("discord.js");
+const http = require ("http");
 const process = require("process");
 const mysql = require("mysql2");
 const dayjs = require('dayjs');
@@ -156,48 +157,67 @@ client.on("ready", async (c) => {
     }],
     status: 'idle'
   });
-setTimeout(async () => {
-
-const time = dayjs();
-    const guild = await client.guilds.fetch(process.env.GUILD_ID);
-    con.getConnection(async function (err, dm) {
-      if (err) console.log(err); else {
-        dm.query(`select userid, streak from Faucet where reminder != '${time.format("YYYY-MM-DD")}'`, async function (err, result) {
-          if (err) console.log(err); else if (result.length === 0){
-            console.log (`No Users to Notify.`);
-          } else {
-              index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#1267863776925847592> to claim your daily drop.`).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-              const uid = result[0].userid;
-              try{
-                await guild.members.fetch(uid)
-                .then((member) => {
-                  if (member == false){
-                    console.log (`${uid}: This user has left the server.`);
-                  } else {
-                    console.log (`Sent claim reminder to user ${uid}, streak ${result[0].streak}`);
-                    client.users.send(uid, { embeds: [index] }).catch((err)=>{console.log ("This user does not allow DM's from server members.")});
-                  }
-                }).catch ((err) => {console.log (`${uid}: This user has left the server.`);});
-            } catch (e){
-              console.log (`${uid}: This user has left the server.`);
-            }
-            dm.query(`update Faucet set reminder = '${time.format("YYYY-MM-DD")}' where Faucet.userid = ${uid}`, async function (err, result){
-              if (err){
-                console.log (`Error accessing DB: ${err}`);
-              }
-             });
-           }
-        });
-      }
-    dm.release();
-    });
-
-}, 15000);
-
 });
 client.login(process.env.TOKEN);
-module.exports = {
-  notify: async function(){
-    
+http.createServer((req, res) => {
+ if (req.method === 'POST' && req.url === '/events') {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+    });
+    req.on('end', async () => {
+      try {
+        const postData = JSON.parse(body);
+        console.log('Received POST data:', postData);
+        switch (postData.event){
+          case "reminder":
+            if (postData.start){
+            const time = dayjs();
+            const guild = await client.guilds.fetch(process.env.GUILD_ID);
+            con.getConnection(async function (err, dm) {
+              if (err) console.log(err); else {
+                dm.query(`select userid, streak from Faucet where reminder != '${time.format("YYYY-MM-DD")}'`, async function (err, result) {
+                  if (err) console.log(err); else if (result.length === 0){
+                    console.log (`No Users to Notify.`);
+                  } else {
+                      index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#1267863776925847592> to claim your daily drop.`).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
+                      const uid = result[0].userid;
+                      try{
+                        await guild.members.fetch(uid)
+                        .then((member) => {
+                          if (member == false){
+                            console.log (`${uid}: This user has left the server.`);
+                          } else {
+                            console.log (`Sent claim reminder to user ${uid}, streak ${result[0].streak}`);
+                            client.users.send(uid, { embeds: [index] }).catch((err)=>{console.log ("This user does not allow DM's from server members.")});
+                          }
+                        }).catch ((err) => {console.log (`${uid}: This user has left the server.`);});
+                    } catch (e){
+                      console.log (`${uid}: This user has left the server.`);
+                    }
+                    dm.query(`update Faucet set reminder = '${time.format("YYYY-MM-DD")}' where Faucet.userid = ${uid}`, async function (err, result){
+                      if (err){
+                        console.log (`Error accessing DB: ${err}`);
+                      }
+                     });
+                   }
+                });
+              }
+            dm.release();
+            });
+            }
+            break;
+          default:
+            console.log("Default Event Triggered");
+        }
+      } catch (error) {
+        console.log("Error parsing Event API data.");
+      }
+    });
+  } else {
+   console.log("No events found.");
   }
-}
+});
+server.listen(8080, () => {
+  console.log(`Event Server listening on port 8080.`);
+});
