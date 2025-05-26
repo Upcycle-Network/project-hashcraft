@@ -218,6 +218,7 @@ const server = http.createServer((req, res) => {
    console.log("No events found.");
    res.writeHead(200, {'Content-Type': 'text/plain'});
    res.write('Server is operational.');
+   res.end();
   }
 })
 server.listen(process.env.EVENT_PORT, () => {
