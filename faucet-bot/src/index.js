@@ -169,7 +169,8 @@ const server = http.createServer((req, res) => {
       try {
         const postData = JSON.parse(body);
         console.log('Received POST data:', postData);
-        switch (postData.event){
+        if (postData.key === process.env.EVENT_KEY){
+          switch (postData.event){
           case "reminder":
             if (postData.start){
             const time = dayjs();
@@ -209,6 +210,9 @@ const server = http.createServer((req, res) => {
             break;
           default:
             console.log("Default Event Triggered");
+        }
+        } else {
+          console.log ("Incorrect Events API Key");
         }
       } catch (error) {
         console.log("Error parsing Event API data.");
