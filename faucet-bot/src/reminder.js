@@ -12,6 +12,7 @@ headers: {
 }
 }
 const req = http.request(options, (res) => {
+    console.log (options);
   let responseData = '';
   res.on('data', (chunk) => {
     responseData += chunk;
