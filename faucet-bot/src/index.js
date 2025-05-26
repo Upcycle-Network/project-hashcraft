@@ -218,6 +218,6 @@ const server = http.createServer((req, res) => {
    console.log("No events found.");
   }
 })
-server.listen(8080, () => {
-  console.log("Hashcraft Events API listening on port 8080.");
+server.listen(process.env.EVENT_PORT, () => {
+  console.log(`Hashcraft Events API listening on port ${process.env.EVENT_PORT}.`);
 });
