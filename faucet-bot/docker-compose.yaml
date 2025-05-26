@@ -3,6 +3,8 @@ services:
     image: hashcraft
     container_name: hashcraft
     restart: always
+    ports:
+      - 27:27
     networks:
       hashcraft-network:
         ipv4_address: 172.20.128.3
