@@ -1,4 +1,4 @@
-require('dotenv').config(/*{ path: require('find-config')('.env') }*/);
+require('dotenv').config();
 const { Client, IntentsBitField, EmbedBuilder, ActivityType } = require("discord.js");
 const hash = require ("js-sha256");
 const http = require ("http");
@@ -175,7 +175,6 @@ const server = http.createServer((req, res) => {
     req.on('end', async () => {
       try {
         const postData = JSON.parse(body);
-        console.log('Received POST data:', postData);
         if (postData.key === hash.sha256(process.env.EVENT_KEY)){
         switch (postData.type) {
           case "event":
