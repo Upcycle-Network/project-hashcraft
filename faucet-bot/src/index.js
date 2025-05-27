@@ -160,7 +160,7 @@ client.on("ready", async (c) => {
 });
 client.login(process.env.TOKEN);
 const server = http.createServer((req, res) => {
-  var message;
+  var message = '';
  if (req.method === 'POST') {
     let body = '';
     req.on('data', chunk => {
@@ -229,7 +229,7 @@ const server = http.createServer((req, res) => {
         }
           } else {
           message = "Incorrect Events API Key";
-        }        
+        }
       } catch (error) {
         message = "Error Parsing Event API data.";
       }
