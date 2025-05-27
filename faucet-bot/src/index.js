@@ -233,15 +233,18 @@ const server = http.createServer((req, res) => {
       } catch (error) {
         message = "Error Parsing Event API data.";
       }
-      
+      res.writeHead(200, {'Content-Type': 'text/plain'});
+      console.log(message);
+      res.write(message);
+      res.end();
     });
   } else {
     message = "No events found, API Operational."
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    console.log(message);
+    res.write(message);
+    res.end();
   }
-  res.writeHead(200);
-  console.log(message);
-  res.write(message);
-  res.end();
 });
 server.listen(process.env.EVENT_PORT, () => {
   console.log(`Hashcraft Events API listening on port ${process.env.EVENT_PORT}.`);
