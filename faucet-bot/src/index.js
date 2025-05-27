@@ -46,8 +46,8 @@ const index = new EmbedBuilder();
 var rbt;
 function APIMessage (response, message){
   try{
+  console.log(`EVENT_API: ${message}`);
   response.writeHead(200, {'Content-Type': 'text/plain'});
-  console.log(message);
   response.write(message);
   response.end();
   }
