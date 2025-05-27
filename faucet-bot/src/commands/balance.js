@@ -1,6 +1,13 @@
 const {EmbedBuilder} = require("discord.js");
 const process = require("process");
-
+const dayjs = require('dayjs');
+function checkClaim (check, reference){
+if(check.diff(reference, 'day') >= 1){
+  return "⚠";
+} else {
+  return "";
+}
+}
 module.exports = {
   check: async function (embed, uid, con) {
     await embed.deferReply();
@@ -21,15 +28,17 @@ module.exports = {
       } else {
         balance.query(`insert into Faucet (userid) values (${userid}) on duplicate key update userid = ${userid}`, async function (err) {
             if (!err) {
-              balance.query(`select wallet_name, mdu_bal, streak from Faucet where userid = ${userid}`, async function (err, result) {
+              balance.query(`select wallet_name, mdu_bal, streak, last_used from Faucet where userid = ${userid}`, async function (err, result) {
                   if (!err) {
                     if (result[0].wallet_name == null) {
                       bal.setAuthor({ name: process.env.BOT_NAME + ' Faucet', iconURL: process.env.FAIL }).setTitle(`Account not linked yet`).setColor(0xff0000);
                       await embed.followUp({ embeds: [bal] });
                     } else {
+                      const date = result[0].last_used;
+                      const time = dayjs();
                       const balc = result[0].mdu_bal;
                       const streak = result[0].streak
-                      bal.setDescription(`<@${userid}>'s Current Balance: \`⧈${balc}\`\nDUCO Balance:\`ↁ ${balc / 100}\`\nClaim Streak: \`${streak}\``).setAuthor({ name: process.env.BOT_NAME + ' Faucet', iconURL: process.env.ICON });
+                      bal.setDescription(`<@${userid}>'s Current Balance: \`⧈${balc}\`\nDUCO Balance:\`ↁ ${balc / 100}\`\nClaim Streak: \`${streak} ${checkClaim(time, date)}\``).setAuthor({ name: process.env.BOT_NAME + ' Faucet', iconURL: process.env.ICON });
                       await embed.followUp({ embeds: [bal] });
                     }
                   } else {
