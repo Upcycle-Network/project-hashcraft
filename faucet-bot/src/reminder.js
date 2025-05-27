@@ -1,10 +1,10 @@
 const http = require("http");
 const process = require("process");
-const postData = JSON.stringify({"event": "reminder", "key": `"${process.env.EVENT_KEY}"`, "start": true})
+const postData = JSON.stringify({"type": "event", "event": "reminder", "key": `"${process.env.EVENT_KEY}"`, "start": true})
 const options = {
 hostname: process.env.EVENT_IP,
 port: process.env.EVENT_PORT,
-path: '/event',
+path: '/',
 method: 'POST',
 headers: {
     'Content-Type': 'application/json',

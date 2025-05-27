@@ -160,7 +160,8 @@ client.on("ready", async (c) => {
 });
 client.login(process.env.TOKEN);
 const server = http.createServer((req, res) => {
- if (req.method === 'POST' && req.url === '/events') {
+  console.log (req);
+ if (req.method === 'POST') {
     let body = '';
     req.on('data', chunk => {
       body += chunk;
@@ -170,6 +171,8 @@ const server = http.createServer((req, res) => {
         const postData = JSON.parse(body);
         console.log('Received POST data:', postData);
         if (postData.key === process.env.EVENT_KEY){
+        switch (postData.type) {
+          case "event":
           switch (postData.event){
           case "reminder":
             if (postData.start){
@@ -211,9 +214,13 @@ const server = http.createServer((req, res) => {
           default:
             console.log("Default Event Triggered");
         }
-        } else {
-          console.log ("Incorrect Events API Key");
+            break;
+          default:
+            console.log ("No EventType");
         }
+          } else {
+          console.log ("Incorrect Events API Key");
+        }        
       } catch (error) {
         console.log("Error parsing Event API data.");
       }

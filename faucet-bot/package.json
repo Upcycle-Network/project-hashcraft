@@ -5,8 +5,8 @@
   "main": "src/index.js",
   "type": "commonjs",
   "scripts": {
-    "start": "npm i && node src/slashRegister.js && node .",
-    "event_reminder": "node --env-file=../.env reminder.js"
+    "refresh": "npm i && node src/slashRegister.js && node .",
+    "event_reminder": "node --env-file=.env src/reminder.js"
   },
   "keywords": [],
   "author": "KosmicDaKerbal",
