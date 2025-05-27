@@ -213,16 +213,28 @@ const server = http.createServer((req, res) => {
             break;
           default:
             console.log("Default Event Triggered");
+            res.writeHead(200, {'Content-Type': 'text/plain'});
+            res.write('Default Event Triggered');
+            res.end();
         }
             break;
           default:
             console.log ("No EventType");
+            res.writeHead(200, {'Content-Type': 'text/plain'});
+            res.write('No EventType');
+            res.end();
         }
           } else {
           console.log ("Incorrect Events API Key");
+          res.writeHead(200, {'Content-Type': 'text/plain'});
+          res.write('Incorrect Events API Key');
+          res.end();
         }        
       } catch (error) {
         console.log("Error parsing Event API data.");
+        res.writeHead(200, {'Content-Type': 'text/plain'});
+        res.write('Error parsing Event API data.');
+        res.end();
       }
     });
   } else {
@@ -231,7 +243,7 @@ const server = http.createServer((req, res) => {
    res.write('Server is operational.');
    res.end();
   }
-})
+});
 server.listen(process.env.EVENT_PORT, () => {
   console.log(`Hashcraft Events API listening on port ${process.env.EVENT_PORT}.`);
 });
