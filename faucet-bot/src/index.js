@@ -160,12 +160,14 @@ client.on("ready", async (c) => {
 });
 client.login(process.env.TOKEN);
 const server = http.createServer((req, res) => {
+  var message;
  if (req.method === 'POST') {
     let body = '';
     req.on('data', chunk => {
       body += chunk;
     });
     req.on('end', async () => {
+      res.writeHead(200, {'Content-Type': 'text/plain'});
       try {
         const postData = JSON.parse(body);
         console.log('Received POST data:', postData);
@@ -180,16 +182,13 @@ const server = http.createServer((req, res) => {
             con.getConnection(async function (err, dm) {
               if (err) {
               console.log(err);
-              res.writeHead(200, {'Content-Type': 'text/plain'});
-              res.write(`Error accessing DB to Update: ${err}`);
-              res.end();
+              message = `An error occurred while getting SQL Connection: ${err}`;
               } else {
                 dm.query(`select userid, streak from Faucet where reminder != '${time.format("YYYY-MM-DD")}'`, async function (err, result) {
-                  if (err) console.log(err); else if (result.length === 0){
-                    console.log (`No Users to Notify.`);
-                    res.writeHead(200, {'Content-Type': 'text/plain'});
-                    res.write('No Users to Notify');
-                    res.end();
+                  if (err){
+                    message = `An error occurred while getting data from DB: ${err}`;
+                   } else if (result.length === 0){
+                    message = `No Users to Notify.`;
                   } else {
                       index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#1267863776925847592> to claim your daily drop.`).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
                       const uid = result[0].userid;
@@ -197,40 +196,22 @@ const server = http.createServer((req, res) => {
                         await guild.members.fetch(uid)
                         .then((member) => {
                           if (member == false){
-                            console.log (`${uid}: This user has left the server.`);
-                            res.writeHead(200, {'Content-Type': 'text/plain'});
-                            res.write(`${uid}: This user has left the server.`);
-                            res.end();
+                            message = `${uid}: This user has left the server.`;
                             } else {
-                            console.log (`Sent claim reminder to user ${uid}, streak ${result[0].streak}`);
+                            message = `Sent claim reminder to user ${uid}, streak ${result[0].streak}`;
                             client.users.send(uid, { embeds: [index] }).catch((err)=>{
-                            console.log ("This user does not allow DM's from server members.");
-                            res.writeHead(200, {'Content-Type': 'text/plain'});
-                            res.write(`This user does not allow DM's from server members.`);
-                            res.end();
+                            message = `This user does not allow DM's from server members.`;
                             });
-                            res.writeHead(200, {'Content-Type': 'text/plain'});
-                            res.write(`Sent claim reminder to user ${uid}, streak ${result[0].streak}`);
-                            res.end();
                           }
                         }).catch ((err) => {
-                          console.log (`${uid}: This user has left the server.`);
-                          res.writeHead(200, {'Content-Type': 'text/plain'});
-                          res.write(`${uid}: This user has left the server.`);
-                          res.end();
+                          message = `${uid}: This user has left the server.`;
                         });
                     } catch (e){
-                      console.log (`${uid}: This user has left the server.`);
-                      res.writeHead(200, {'Content-Type': 'text/plain'});
-                      res.write(`${uid}: This user has left the server.`);
-                      res.end();
+                      message = `${uid}: This user has left the server.`;
                     }
                     dm.query(`update Faucet set reminder = '${time.format("YYYY-MM-DD")}' where Faucet.userid = ${uid}`, async function (err, result){
                       if (err){
-                        console.log (`Error accessing DB to Update: ${err}`);
-                        res.writeHead(200, {'Content-Type': 'text/plain'});
-                        res.write(`Error accessing DB to Update: ${err}`);
-                        res.end();
+                        message = `Error accessing DB to Update: ${err}`;
                       }
                      });
                    }
@@ -241,37 +222,26 @@ const server = http.createServer((req, res) => {
             }
             break;
           default:
-            console.log("Default Event Triggered");
-            res.writeHead(200, {'Content-Type': 'text/plain'});
-            res.write('Default Event Triggered');
-            res.end();
+            message = "Default Event Triggered";
         }
             break;
           default:
-            console.log ("No EventType");
-            res.writeHead(200, {'Content-Type': 'text/plain'});
-            res.write('No EventType');
-            res.end();
+            message = "No EventType";
         }
           } else {
-          console.log ("Incorrect Events API Key");
-          res.writeHead(200, {'Content-Type': 'text/plain'});
-          res.write('Incorrect Events API Key');
-          res.end();
+          message = "Incorrect Events API Key";
         }        
       } catch (error) {
-        console.log("Error Parsing Event API data.");
-        res.writeHead(200, {'Content-Type': 'text/plain'});
-        res.write('Error parsing Event API data.');
-        res.end();
+        message = "Error Parsing Event API data.";
       }
+      
     });
   } else {
-   console.log("No events found.");
-   res.writeHead(200, {'Content-Type': 'text/plain'});
-   res.write('Server is operational.');
-   res.end();
+    message = "No events found, API Operational."
   }
+  console.log(message);
+  res.write(message);
+  res.end();
 });
 server.listen(process.env.EVENT_PORT, () => {
   console.log(`Hashcraft Events API listening on port ${process.env.EVENT_PORT}.`);
