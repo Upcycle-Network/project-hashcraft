@@ -213,7 +213,12 @@ const server = http.createServer((req, res) => {
                             res.write(`Sent claim reminder to user ${uid}, streak ${result[0].streak}`);
                             res.end();
                           }
-                        }).catch ((err) => {console.log (`${uid}: This user has left the server.`);});
+                        }).catch ((err) => {
+                          console.log (`${uid}: This user has left the server.`);
+                          res.writeHead(200, {'Content-Type': 'text/plain'});
+                          res.write(`${uid}: This user has left the server.`);
+                          res.end();
+                        });
                     } catch (e){
                       console.log (`${uid}: This user has left the server.`);
                       res.writeHead(200, {'Content-Type': 'text/plain'});
