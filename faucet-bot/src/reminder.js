@@ -1,5 +1,6 @@
 const http = require("http");
 const process = require("process");
+const dotenv = require('dotenv');
 const postData = JSON.stringify({"event": "reminder", "key": `"${process.env.EVENT_KEY}"`, "start": true})
 const options = {
 hostname: process.env.EVENT_IP,
@@ -12,6 +13,7 @@ headers: {
 }
 }
 console.log (options);
+dotenv.config();
 //const req = http.request(options, (res) => {
   /*
   let responseData = '';
