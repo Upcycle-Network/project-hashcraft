@@ -1,6 +1,6 @@
 const process = require("process");
 const dayjs = require('dayjs');
-const {EmbedBuilder} = require("discord.js");
+const {EmbedBuilder, MessageFlags} = require("discord.js");
 module.exports = {
   drop: async function (embed, userid, con) {
     const claimbox = new EmbedBuilder().setAuthor({ name: `${process.env.BOT_NAME} Faucet`, iconURL: process.env.PROCESSING }).setTitle("Please Wait...").setColor(0xf18701).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();

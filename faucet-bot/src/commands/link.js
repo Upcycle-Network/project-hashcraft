@@ -1,6 +1,6 @@
 const process = require("process");
 const http = require("http");
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, MessageFlags } = require("discord.js");
 module.exports = {
   start: async function (embed, userid, con, client) {
     const confirmbox = new EmbedBuilder().setAuthor({ name: `${process.env.BOT_NAME} Registration`, iconURL: process.env.PROCESSING }).setTitle("Link Account to User").setDescription("Please Wait...\nConnecting to DB...").setColor(0xff0000).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();

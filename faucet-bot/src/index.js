@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { Client, IntentsBitField, EmbedBuilder, ActivityType } = require("discord.js");
+const { Client, IntentsBitField, EmbedBuilder, ActivityType, MessageFlags } = require("discord.js");
 const hash = require ("js-sha256");
 const http = require ("http");
 const process = require("process");
