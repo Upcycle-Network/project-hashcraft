@@ -1,6 +1,5 @@
 const http = require("http");
 const process = require("process");
-const dotenv = require('dotenv');
 const postData = JSON.stringify({"event": "reminder", "key": `"${process.env.EVENT_KEY}"`, "start": true})
 const options = {
 hostname: process.env.EVENT_IP,
@@ -12,10 +11,7 @@ headers: {
     'Content-Length': Buffer.byteLength(postData)
 }
 }
-console.log (options);
-dotenv.config();
-//const req = http.request(options, (res) => {
-  /*
+const req = http.request(options, (res) => {
   let responseData = '';
   res.on('data', (chunk) => {
     responseData += chunk;
@@ -25,7 +21,7 @@ dotenv.config();
   });
 });
 req.on('error', (error) => {
-  console.error('Error:', error);*/
-//});
-//req.write(postData);
-//req.end();
+  console.error('Error:', error);
+});
+req.write(postData);
+req.end();
