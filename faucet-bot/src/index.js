@@ -1,4 +1,4 @@
-require('dotenv').config({ path: require('find-config')('.env') });
+//require('dotenv').config({ path: require('find-config')('.env') });
 const { Client, IntentsBitField, EmbedBuilder, ActivityType } = require("discord.js");
 const http = require ("http");
 const process = require("process");
