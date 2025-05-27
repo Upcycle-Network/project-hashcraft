@@ -3,7 +3,7 @@ const process = require("process");
 const dayjs = require('dayjs');
 function checkClaim (check, reference){
 if(check.diff(reference, 'day') >= 1){
-  return "⚠";
+  return " ⚠";
 } else {
   return "";
 }
@@ -38,7 +38,7 @@ module.exports = {
                       const time = dayjs();
                       const balc = result[0].mdu_bal;
                       const streak = result[0].streak
-                      bal.setDescription(`<@${userid}>'s Current Balance: \`⧈${balc}\`\nDUCO Balance:\`ↁ ${balc / 100}\`\nClaim Streak: \`${streak} ${checkClaim(time, date)}\``).setAuthor({ name: process.env.BOT_NAME + ' Faucet', iconURL: process.env.ICON });
+                      bal.setDescription(`<@${userid}>'s Current Balance: \`⧈${balc}\`\nDUCO Balance:\`ↁ ${balc / 100}\`\nClaim Streak: \`${streak}${checkClaim(time, date)}\``).setAuthor({ name: process.env.BOT_NAME + ' Faucet', iconURL: process.env.ICON });
                       await embed.followUp({ embeds: [bal] });
                     }
                   } else {
