@@ -167,7 +167,6 @@ const server = http.createServer((req, res) => {
       body += chunk;
     });
     req.on('end', async () => {
-      res.writeHead(200, {'Content-Type': 'text/plain'});
       try {
         const postData = JSON.parse(body);
         console.log('Received POST data:', postData);
@@ -239,6 +238,7 @@ const server = http.createServer((req, res) => {
   } else {
     message = "No events found, API Operational."
   }
+  res.writeHead(200, {'Content-Type': 'text/plain'});
   console.log(message);
   res.write(message);
   res.end();
