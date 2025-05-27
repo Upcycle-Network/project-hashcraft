@@ -238,7 +238,6 @@ const server = http.createServer((req, res) => {
   } else {
     message = "No events found, API Operational."
   }
-  res.writeHead(200, {'Content-Type': 'text/plain'});
   console.log(message);
   res.write(message);
   res.end();
