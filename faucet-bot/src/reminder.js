@@ -11,8 +11,9 @@ headers: {
     'Content-Length': Buffer.byteLength(postData)
 }
 }
-const req = http.request(options, (res) => {
-  console.log (options);/*
+console.log (options);
+//const req = http.request(options, (res) => {
+  /*
   let responseData = '';
   res.on('data', (chunk) => {
     responseData += chunk;
@@ -23,6 +24,6 @@ const req = http.request(options, (res) => {
 });
 req.on('error', (error) => {
   console.error('Error:', error);*/
-});
+//});
 //req.write(postData);
 //req.end();
