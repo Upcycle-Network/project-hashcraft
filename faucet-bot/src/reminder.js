@@ -12,7 +12,7 @@ headers: {
 }
 }
 const req = http.request(options, (res) => {
-    console.log (options);
+  console.log (options);/*
   let responseData = '';
   res.on('data', (chunk) => {
     responseData += chunk;
@@ -22,7 +22,7 @@ const req = http.request(options, (res) => {
   });
 });
 req.on('error', (error) => {
-  console.error('Error:', error);
+  console.error('Error:', error);*/
 });
-req.write(postData);
-req.end();
+//req.write(postData);
+//req.end();
