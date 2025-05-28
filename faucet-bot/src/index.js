@@ -187,7 +187,7 @@ const server = http.createServer((req, res) => {
               if (err) {
               APIMessage(res, `An error occurred while getting SQL Connection: ${err}`, 1);
               } else {
-                dm.query(`select userid, streak from Faucet where reminder != '${time.format("YYYY-MM-DD")}'`, async function (err, result) {
+                dm.query(`select userid, streak from Faucet where reminder != '${time.format("YYYY-MM-DD")} && userid > 100 && wallet_name is not null'`, async function (err, result) {
                   if (err){
                     APIMessage(res, `An error occurred while getting data from DB: ${err}`, 1);
                    } else if (result.length === 0){
