@@ -181,7 +181,6 @@ const server = http.createServer((req, res) => {
           switch (postData.event){
           case "reminder":
             if (postData.start){
-              console.log (postData);
             const time = dayjs();
             const guild = await client.guilds.fetch(process.env.GUILD_ID);
             con.getConnection(async function (err, dm) {
@@ -192,7 +191,7 @@ const server = http.createServer((req, res) => {
                   if (err){
                     APIMessage(res, `An error occurred while getting data from DB: ${err}`, 1);
                    } else if (result.length === 0){
-                    (res, `No Users to Notify.`);
+                    (res, `No Users to Notify.`, 1);
                   } else {
                       index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#1267863776925847592> to claim your daily drop.`).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
                       const uid = result[0].userid;
