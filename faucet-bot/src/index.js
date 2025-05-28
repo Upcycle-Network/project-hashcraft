@@ -44,10 +44,10 @@ const client = new Client({
 });
 const index = new EmbedBuilder();
 var rbt;
-function APIMessage (response, message){
+function APIMessage (response, message, header){
   try{
   console.log(`EVENT_API: ${message}`);
-  response.writeHead(200, {'Content-Type': 'text/plain'});
+  if (header) response.writeHead(200, {'Content-Type': 'text/plain'});
   response.write(message);
   response.end();
   }
@@ -190,13 +190,13 @@ const server = http.createServer((req, res) => {
             const guild = await client.guilds.fetch(process.env.GUILD_ID);
             con.getConnection(async function (err, dm) {
               if (err) {
-              APIMessage(res, `An error occurred while getting SQL Connection: ${err}`);
+              APIMessage(res, `An error occurred while getting SQL Connection: ${err}`, 1);
               } else {
                 dm.query(`select userid, streak from Faucet where reminder != '${time.format("YYYY-MM-DD")}'`, async function (err, result) {
                   if (err){
-                    APIMessage(res, `An error occurred while getting data from DB: ${err}`);
+                    APIMessage(res, `An error occurred while getting data from DB: ${err}`, 1);
                    } else if (result.length === 0){
-                    APIMessage(res, `No Users to Notify.`);
+                    (res, `No Users to Notify.`);
                   } else {
                       index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#1267863776925847592> to claim your daily drop.`).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
                       const uid = result[0].userid;
@@ -204,22 +204,22 @@ const server = http.createServer((req, res) => {
                         await guild.members.fetch(uid)
                         .then((member) => {
                           if (member == false){
-                            APIMessage(res, `${uid}: This user has left the server.`);
+                            APIMessage(res, `${uid}: This user has left the server.`, 1);
                             } else {
-                            APIMessage(res, `Sent claim reminder to user ${uid}, streak ${result[0].streak}`);
+                            APIMessage(res, `Sent claim reminder to user ${uid}, streak ${result[0].streak}`, 1);
                             client.users.send(uid, { embeds: [index] }).catch((err)=>{
-                            APIMessage(res, `This user does not allow DM's from server members.`);
+                            APIMessage(res, `This user does not allow DM's from server members.`, 0);
                             });
                           }
                         }).catch ((err) => {
-                          APIMessage(res, `${uid}: This user has left the server.`);
+                          APIMessage(res, `${uid}: This user has left the server.`, 1);
                         });
                     } catch (e){
-                      APIMessage(res, `${uid}: This user has left the server.`);
+                      APIMessage(res, `${uid}: This user has left the server.`, 1);
                     }
                     dm.query(`update Faucet set reminder = '${time.format("YYYY-MM-DD")}' where Faucet.userid = ${uid}`, async function (err, result){
                       if (err){
-                        APIMessage(res, `Error accessing DB to Update: ${err}`);
+                        APIMessage(res, `Error accessing DB to Update: ${err}`, 1);
                       }
                      });
                    }
@@ -230,21 +230,21 @@ const server = http.createServer((req, res) => {
             }
             break;
           default:
-            APIMessage(res, `Default Event Triggered`);
+            APIMessage(res, `Default Event Triggered`, 1);
         }
             break;
           default:
-            APIMessage(res, `No EventType`);
+            APIMessage(res, `No EventType`, 1);
         }
           } else {
-          APIMessage(res, `Incorrect Events API Key`);
+          APIMessage(res, `Incorrect Events API Key`, 1);
         }
       } catch (error) {
-        APIMessage(res, `Error Parsing Event API data.`);
+        APIMessage(res, `Error Parsing Event API data.`, 1);
       }
     });
   } else {
-    APIMessage(res, `No events found, API Operational.`);
+    APIMessage(res, `No events found, API Operational.`, 1);
   }
 });
 server.listen(process.env.EVENT_PORT, () => {
