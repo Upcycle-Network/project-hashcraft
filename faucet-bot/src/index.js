@@ -45,15 +45,10 @@ const client = new Client({
 const index = new EmbedBuilder();
 var rbt;
 function APIMessage (response, message, header){
-  try{
   console.log(`EVENT_API: ${message}`);
   if (header) response.writeHead(200, {'Content-Type': 'text/plain'});
   response.write(message);
   response.end();
-  }
-  catch (e){
-    console.log (e);
-  }
 }
 client.on("interactionCreate", async (mainInteraction) => {
   if (!mainInteraction.isChatInputCommand()) return;
