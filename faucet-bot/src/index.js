@@ -181,6 +181,7 @@ const server = http.createServer((req, res) => {
           switch (postData.event){
           case "reminder":
             if (postData.start){
+              console.log (postData);
             const time = dayjs();
             const guild = await client.guilds.fetch(process.env.GUILD_ID);
             con.getConnection(async function (err, dm) {
