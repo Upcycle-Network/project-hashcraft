@@ -37,7 +37,7 @@ const con = mysql.createPool({
 });
 const HTTPS_options = {
   key: fs.readFileSync('./src/server.key'),
-  cert: fs.readFileSync('./src/server.cert'),
+  cert: fs.readFileSync('./src/server.cer'),
 }
 const client = new Client({
   intents: [

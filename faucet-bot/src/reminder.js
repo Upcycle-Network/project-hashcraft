@@ -5,7 +5,7 @@ const options = {
 hostname: process.env.EVENT_IP,
 port: process.env.EVENT_PORT,
 key: fs.readFileSync('./src/server.key'),
-cert: fs.readFileSync('./src/server.cert'),
+cert: fs.readFileSync('./src/server.cer'),
 path: '/',
 method: 'POST',
 headers: {
