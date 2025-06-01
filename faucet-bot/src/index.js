@@ -1,6 +1,7 @@
 require('dotenv').config();
 const { Client, IntentsBitField, EmbedBuilder, ActivityType, MessageFlags } = require("discord.js");
 const https = require ("https");
+const fs = require ("fs");
 const url = require('url');
 const process = require("process");
 const mysql = require("mysql2");
@@ -24,7 +25,6 @@ const comedy = require('./commands/comedy');
 const insult = require('./commands/insultme');
 const kanye = require('./commands/kanye');
 const quote = require('./commands/quote');
-const { stringify } = require('querystring');
 const con = mysql.createPool({
   multipleStatements: true,
   supportBigNumbers: true, 
@@ -35,6 +35,10 @@ const con = mysql.createPool({
   database: process.env.MYSQL_DATABASE,
   port: process.env.MYSQL_PORT
 });
+const HTTPS_options = {
+  key: fs.readFileSync('./server.key'),
+  cert: fs.readFileSync('./server.cert'),
+}
 const client = new Client({
   intents: [
     IntentsBitField.Flags.Guilds,
@@ -170,7 +174,7 @@ client.on("ready", async (c) => {
   });
 });
 client.login(process.env.TOKEN);
-const server = https.createServer((req, res) => {
+const server = https.createServer(HTTPS_options, (req, res) => {
  if (req.method === 'POST') {
     let body = '';
     req.on('data', chunk => {

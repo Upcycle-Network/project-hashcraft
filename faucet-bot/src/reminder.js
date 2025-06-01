@@ -4,6 +4,8 @@ const postData = JSON.stringify({"type": "event", "event": "reminder", "key": `$
 const options = {
 hostname: process.env.EVENT_IP,
 port: process.env.EVENT_PORT,
+key: fs.readFileSync('./server.key'),
+cert: fs.readFileSync('./server.cert'),
 path: '/',
 method: 'POST',
 headers: {

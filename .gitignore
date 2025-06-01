@@ -7,3 +7,5 @@ LICENSE
 faucet-bot/CONTRIBUTING.md
 faucet-bot/CODE_OF_CONDUCT.md
 assets
+server.cert
+server.key
