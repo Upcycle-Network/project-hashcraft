@@ -25,6 +25,7 @@ const comedy = require('./commands/comedy');
 const insult = require('./commands/insultme');
 const kanye = require('./commands/kanye');
 const quote = require('./commands/quote');
+const { stringify } = require('querystring');
 const con = mysql.createPool({
   multipleStatements: true,
   supportBigNumbers: true, 
@@ -50,6 +51,9 @@ function APIMessage (response, message, header){
   if (header) response.writeHead(200, {'Content-Type': 'text/plain'});
   response.write(message);
   response.end();
+}
+function endpoint (object, length){
+  return String (object.url).substring(0,length);
 }
 client.on("interactionCreate", async (mainInteraction) => {
   if (!mainInteraction.isChatInputCommand()) return;
@@ -239,7 +243,7 @@ const server = http.createServer((req, res) => {
         APIMessage(res, `Error Parsing Event API data.`, 1);
       }
     });
-  } else if (req.url === "/oauth") {
+  } else if (endpoint(req, 6) == "/oauth") {
     const params = url.parse(req.url, true);
     const queryParams = params.query;
     APIMessage(res, `Detected Parameter: ${queryParams.code}`, 1);
