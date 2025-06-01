@@ -1,7 +1,6 @@
-const http = require("http");
+const https = require("https");
 const process = require("process");
-const hash = require("js-sha256");
-const postData = JSON.stringify({"type": "event", "event": "reminder", "key": `${hash.sha256(process.env.EVENT_KEY)}`, "start": true})
+const postData = JSON.stringify({"type": "event", "event": "reminder", "key": `${process.env.EVENT_KEY}`, "start": true})
 const options = {
 hostname: process.env.EVENT_IP,
 port: process.env.EVENT_PORT,
@@ -12,7 +11,7 @@ headers: {
     'Content-Length': Buffer.byteLength(postData)
 }
 }
-const req = http.request(options, (res) => {
+const req = https.request(options, (res) => {
   let responseData = '';
   res.on('data', (chunk) => {
     responseData += chunk;

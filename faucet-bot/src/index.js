@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { Client, IntentsBitField, EmbedBuilder, ActivityType, MessageFlags } = require("discord.js");
-const hash = require ("js-sha256");
-const http = require ("http");
+const https = require ("https");
 const url = require('url');
 const process = require("process");
 const mysql = require("mysql2");
@@ -171,7 +170,7 @@ client.on("ready", async (c) => {
   });
 });
 client.login(process.env.TOKEN);
-const server = http.createServer((req, res) => {
+const server = https.createServer((req, res) => {
  if (req.method === 'POST') {
     let body = '';
     req.on('data', chunk => {
@@ -180,7 +179,7 @@ const server = http.createServer((req, res) => {
     req.on('end', async () => {
       try {
         const postData = JSON.parse(body);
-        if (postData.key === hash.sha256(process.env.EVENT_KEY)){
+        if (postData.key === process.env.EVENT_KEY){
         switch (postData.type) {
           case "event":
           switch (postData.event){
