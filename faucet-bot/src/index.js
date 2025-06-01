@@ -2,6 +2,7 @@ require('dotenv').config();
 const { Client, IntentsBitField, EmbedBuilder, ActivityType, MessageFlags } = require("discord.js");
 const hash = require ("js-sha256");
 const http = require ("http");
+const url = require('url');
 const process = require("process");
 const mysql = require("mysql2");
 const dayjs = require('dayjs');
@@ -238,6 +239,10 @@ const server = http.createServer((req, res) => {
         APIMessage(res, `Error Parsing Event API data.`, 1);
       }
     });
+  } else if (req.url === "/oauth") {
+    const params = url.parse(req.url, true);
+    const queryParams = params.query;
+    APIMessage(res, `Detected Parameter: ${queryParams.code}`, 1);
   } else {
     APIMessage(res, `No events found, API Operational.`, 1);
   }
