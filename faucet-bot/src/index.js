@@ -248,7 +248,6 @@ const server = https.createServer((req, res) => {
     APIMessage(res, `Detected Parameter: ${queryParams.code}`, 1);
   } else {
     APIMessage(res, `No events found, API Operational.`, 1);
-    console.log (req);
   }
 });
 server.listen(process.env.EVENT_PORT, () => {
