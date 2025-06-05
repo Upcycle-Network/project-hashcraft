@@ -1,5 +1,6 @@
 const https = require("https");
 const process = require("process");
+const fs = require ("fs");
 const postData = JSON.stringify({"type": "event", "event": "reminder", "key": `${process.env.EVENT_KEY}`, "start": true})
 const options = {
 hostname: process.env.EVENT_IP,
