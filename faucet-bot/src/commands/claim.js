@@ -52,7 +52,7 @@ module.exports = {
                             streak = 1;
                           }
                           const ct = claimtime.format("YYYY-MM-DD");
-                          claim.query(`insert into Faucet (userid, last_used, streak) values (${u}, '${claimtime.format("YYYY-MM-DD")}', ${streak}) on duplicate key update mdu_bal = mdu_bal + ${drop}, claims = claims + 1, streak = ${streak}, last_used = ${ct}, reminder = ${ct};`,async function (err) {
+                          claim.query(`insert into Faucet (userid, last_used, streak) values (${u}, '${claimtime.format("YYYY-MM-DD")}', ${streak}) on duplicate key update mdu_bal = mdu_bal + ${drop}, claims = claims + 1, streak = ${streak}, last_used = '${ct}', reminder = '${ct}';`,async function (err) {
                               if (!err) {
                                 await embed.followUp({ embeds: [claimbox] });
                               } else {
