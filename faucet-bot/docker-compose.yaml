@@ -15,7 +15,7 @@ services:
     command:
       - "http"
       - "--url=blessed-dodo-rich.ngrok-free.app"
-      - "https://172.20.128.3:5"
+      - "https://localhost:5"
     volumes:
       - ./ngrok.yml:/etc/ngrok.yml
     ports:
