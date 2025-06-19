@@ -4,11 +4,22 @@ services:
     container_name: hashcraft
     restart: always
     ports:
-      - 27:27
+      - 5:5
     networks:
       hashcraft-network:
         ipv4_address: 172.20.128.3
-
+  ngrok-hashcraft:
+    image: ngrok/ngrok:latest
+    restart: unless-stopped
+    container_name: ngrok-hashcraft
+    command:
+      - "http"
+      - "--url=blessed-dodo-rich.ngrok-free.app"
+      - "https://172.20.128.3:5"
+    volumes:
+      - ./ngrok.yml:/etc/ngrok.yml
+    ports:
+      - 9:4040
 networks:
   hashcraft-network:
     ipam:
