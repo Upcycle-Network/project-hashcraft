@@ -236,6 +236,41 @@ const server = https.createServer(HTTPS_options, (req, res) => {
             APIMessage(res, `Default Event Triggered`, 1);
         }
             break;
+            case "withdraw":
+              //dirction of money flow is from the plugin to discord economy
+              const userId1 = postData.userId;
+              const amount1 = postData.amount;
+              /******************************************/
+              // logic for fetching user data and updating balance from the database
+
+              /******************************************/
+              res.writeHead(200, { "Content-Type": "application/json" });
+              if(result)
+                // Assuming the withdrawal was successful
+                res.end(JSON.stringify({ msg: "Successful Withdrawal", status: true }));
+              else
+                // Assuming the withdrawal failed
+                res.end(JSON.stringify({ msg: "Withdrawal Failed", status: false }));
+              break;
+
+            case "deposit":
+               //dirction of money flow is from the discord economy to plugin 
+              const userId2 = postData.userId;
+              const amount2 = postData.amount;
+              /******************************************/
+              // logic for fetching user data and updating balance from the database
+
+              /******************************************/
+
+              res.writeHead(200, { "Content-Type": "application/json" });
+              if(result)
+                // Assuming the withdrawal was successful
+                res.end(JSON.stringify({ msg: "Successful Withdrawal", status: true }));
+              else
+                // Assuming the withdrawal failed
+                res.end(JSON.stringify({ msg: "Withdrawal Failed", status: false }));
+              break;
+              break;
           default:
             APIMessage(res, `No EventType`, 1);
         }
