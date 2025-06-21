@@ -6,6 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "refresh": "npm i && node src/slashRegister.js && node .",
+    "commandReload": "node src/slashRegister.js",
     "event_reminder": "node --env-file=.env --use-system-ca src/reminder.js"
   },
   "keywords": [],
