@@ -89,7 +89,19 @@ client.on("interactionCreate", async (mainInteraction) => {
           break;  
         case 'leaderboard':
           lb.show(mainInteraction, mainInteraction.user.id, con);
-          break;  
+          break;
+        case "help": break;
+        case "stats": break;
+        case "eyebleach": break;
+        case "waifu": break;
+        case "buzzwords": break;
+        case "comedy": break;
+        case "kanye": break;
+        case "insultme": break;
+        case "quote": break;
+        case 'faucetlist': break;
+        case "link": break;
+        case 'balance': break; 
         default:
           if (mainInteraction.member.roles.cache.some(role => role.name === process.env.SERVER_OWNER) || mainInteraction.member.roles.cache.some(role => role.name === process.env.MODERATOR)) {
             switch (mainInteraction.commandName) {
@@ -113,12 +125,12 @@ client.on("interactionCreate", async (mainInteraction) => {
                 index.setTitle("Oh, Hello Moderator").setColor(0xff0000).setDescription("Only the server owner can use this command.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
                 await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });}
               break;
+              
             }
           } else {
             index.setTitle("Nice try, pleb").setColor(0xff0000).setDescription("You cannot use admin commands when you're not one, duh.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
             await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
           }
-          
           break;
       }
   } else {
