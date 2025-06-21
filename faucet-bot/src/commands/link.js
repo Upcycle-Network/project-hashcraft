@@ -58,13 +58,28 @@ module.exports = {
                                           switch (linkInteraction.customId) {
                                             case "confirm":
                                               cancel.setStyle(ButtonStyle.Secondary);
-                                              link.query(`insert into Faucet(userid, wallet_name) values (${u}, '${String(embed.options.get("account-name").value)}') on duplicate key update userid = ${u}, wallet_name = '${String(embed.options.get("account-name").value)}';`, async function (err, result) {
+                                              const walletname = String(embed.options.get("account-name").value);
+                                              link.query(`select userid from Faucet where wallet_name = '${walletname}'`, async function (err, result) {
                                                   if (err) {
                                                     confirmbox.setAuthor({ name: `${process.env.BOT_NAME} Registration`, iconURL: process.env.FAIL }).setTitle("Link " +String(embed.options.get("account-name").value) +" Failed").setDescription("DB Query Failed, Error Message: \n\`\`\`\n" + err + "\n\`\`\`\nPlease try again.").setColor(0xff0000).setTimestamp();
                                                     confirm.setStyle(ButtonStyle.Secondary);
                                                     cancel.setStyle(ButtonStyle.Secondary);
                                                   } else {
-                                                    confirmbox.setTitle("Linked Account " +String(embed.options.get("account-name").value) +" Successfully.").setDescription("Run /claim to get your daily ⧈ mDU").setColor(0x00ff00).setAuthor({ name: `${process.env.BOT_NAME} Registration`, iconURL: process.env.SUCCESS }).setTimestamp();
+                                                    if (result.length === 0){
+                                                    link.query(`update Faucet set wallet_name = '${walletname}' where Faucet.userid = ${u};`, async function (err){
+                                                      if (err){
+                                                        confirmbox.setAuthor({ name: `${process.env.BOT_NAME} Registration`, iconURL: process.env.FAIL }).setTitle("Link " +String(embed.options.get("account-name").value) +" Failed").setDescription("DB Query Failed, Error Message: \n\`\`\`\n" + err + "\n\`\`\`\nPlease try again.").setColor(0xff0000).setTimestamp();
+                                                        confirm.setStyle(ButtonStyle.Secondary);
+                                                        cancel.setStyle(ButtonStyle.Secondary);
+                                                      } else {
+                                                        confirmbox.setTitle("Linked Account " +String(embed.options.get("account-name").value) +" Successfully.").setDescription("Run /claim to get your daily ⧈ mDU").setColor(0x00ff00).setAuthor({ name: `${process.env.BOT_NAME} Registration`, iconURL: process.env.SUCCESS }).setTimestamp();
+                                                      }
+                                                    });
+                                                    } else {
+                                                    confirmbox.setAuthor({ name: `${process.env.BOT_NAME} Registration`, iconURL: process.env.FAIL }).setTitle("Detected Alternate Account").setDescription(`Come back with your real ID, <@${result[0].userid}>`).setColor(0xff0000).setTimestamp();
+                                                    confirm.setStyle(ButtonStyle.Secondary);
+                                                    cancel.setStyle(ButtonStyle.Secondary);
+                                                    }
                                                   }
                                                 }
                                               );

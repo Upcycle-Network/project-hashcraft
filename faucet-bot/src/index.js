@@ -6,6 +6,7 @@ const url = require('url');
 const process = require("process");
 const mysql = require("mysql2");
 const dayjs = require('dayjs');
+const lb = require('./commands/leaderboard');
 const help = require('./commands/help');
 const link = require('./commands/link');
 const claim = require('./commands/claim');
@@ -71,39 +72,6 @@ client.on("interactionCreate", async (mainInteraction) => {
   } else {
     if (mainInteraction.member.roles.cache.some(role => role.name === process.env.VERIFIED_ROLE)) {
       switch (mainInteraction.commandName) {
-        case "help":
-          help.send(mainInteraction);
-          break;
-        case "stats":
-          stats.send(mainInteraction, con);
-          break;
-        case "eyebleach":
-          eyebleach.bless(mainInteraction);
-          break;
-        case "waifu":
-          waifu.moe(mainInteraction);
-          break;
-        case "buzzwords":
-          buzzwords.generate(mainInteraction);
-          break;
-        case "comedy":
-          comedy.kardo(mainInteraction);
-          break;
-        case "kanye":
-          kanye.west(mainInteraction);
-          break;
-        case "insultme":
-          insult.me(mainInteraction);
-          break;
-        case "quote":
-          quote.person(mainInteraction);
-          break;
-        case 'faucetlist':
-          flist.send(mainInteraction);
-          break;
-        case "link":
-          link.start(mainInteraction, mainInteraction.user.id, con, client); //yes this is a sword art online reference
-          break;
         case 'claim':
           claim.drop(mainInteraction, mainInteraction.user.id, con);
           break;
@@ -116,11 +84,11 @@ client.on("interactionCreate", async (mainInteraction) => {
             deposit.transfer(mainInteraction, mainInteraction.user.id, con);
           }
           break;
-        case 'balance':
-          balance.check(mainInteraction, mainInteraction.user.id, con);
-          break;
         case 'pay':
           mdu.pay(mainInteraction, mainInteraction.user.id, con);
+          break;  
+        case 'leaderboard':
+          lb.display(mainInteraction, mainInteraction.user.id, con);
           break;  
         default:
           if (mainInteraction.member.roles.cache.some(role => role.name === process.env.SERVER_OWNER) || mainInteraction.member.roles.cache.some(role => role.name === process.env.MODERATOR)) {
@@ -154,8 +122,48 @@ client.on("interactionCreate", async (mainInteraction) => {
           break;
       }
   } else {
-    index.setTitle("User not verified").setColor(0xff0000).setDescription(`Whoa there, we don't know whether you're a human or not.\nVerify yourself in the <#${process.env.VERIFICATION_CHANNEL}> channel`).setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-    await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
+    switch (mainInteraction.commandName) {
+        case "help":
+          help.send(mainInteraction);
+          break;
+        case "stats":
+          stats.send(mainInteraction, con);
+          break;
+        case "eyebleach":
+          eyebleach.bless(mainInteraction);
+          break;
+        case "waifu":
+          waifu.moe(mainInteraction);
+          break;
+        case "buzzwords":
+          buzzwords.generate(mainInteraction);
+          break;
+        case "comedy":
+          comedy.kardo(mainInteraction);
+          break;
+        case "kanye":
+          kanye.west(mainInteraction);
+          break;
+        case "insultme":
+          insult.me(mainInteraction);
+          break;
+        case "quote":
+          quote.person(mainInteraction);
+          break;
+        case 'faucetlist':
+          flist.send(mainInteraction);
+          break;
+        case "link":
+          link.start(mainInteraction, mainInteraction.user.id, con, client); //yes this is a sword art online reference
+          break;
+        case 'balance':
+          balance.check(mainInteraction, mainInteraction.user.id, con);
+          break;
+        default:
+          index.setTitle("User not verified").setColor(0xff0000).setDescription(`Whoa there, we don't know whether you're a human or not.\nIf you want to use the faucet, verify yourself in the <#${process.env.VERIFICATION_CHANNEL}> channel.\nIf you want to link your wallet to play on Duinocraft-CE, run /link.`).setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
+          await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
+          break;
+    }
   }
   }
   if (!rbt){
@@ -251,7 +259,7 @@ const server = https.createServer(HTTPS_options, (req, res) => {
     const queryParams = params.query;
     APIMessage(res, `Detected Parameter: ${queryParams.code}`, 1);
   } else {
-    APIMessage(res, `No events found, API Operational.`, 1);
+    APIMessage(res, `Events API v1.1`, 1);
   }
 });
 server.listen(process.env.EVENT_PORT, () => {
