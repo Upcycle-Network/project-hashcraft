@@ -39,7 +39,7 @@ module.exports = {
         )
         );
         const actionRow = new ActionRowBuilder().addComponents(selectMenu);
-        const reply = await embed.editReply({ embeds: [leaderboard], components: [actionRow] });/*
+        const reply = await embed.editReply({ embeds: [leaderboard], components: [actionRow] });
         conlb.query(`select userid from Faucet where userid > 100 order by mdu_bal desc;
                      select mdu_bal from Faucet where userid > 100 order by mdu_bal desc;
                      select userid from Faucet where userid > 100 order by streak desc;
@@ -89,7 +89,7 @@ module.exports = {
           }
         });
         }
-        });*/
+        });
       }
       conlb.release();
     });
