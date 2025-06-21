@@ -90,18 +90,42 @@ client.on("interactionCreate", async (mainInteraction) => {
         case 'leaderboard':
           lb.show(mainInteraction, mainInteraction.user.id, con);
           break;
-        case "help": break;
-        case "stats": break;
-        case "eyebleach": break;
-        case "waifu": break;
-        case "buzzwords": break;
-        case "comedy": break;
-        case "kanye": break;
-        case "insultme": break;
-        case "quote": break;
-        case 'faucetlist': break;
-        case "link": break;
-        case 'balance': break; 
+          case "help":
+          help.send(mainInteraction);
+          break;
+        case "stats":
+          stats.send(mainInteraction, con);
+          break;
+        case "eyebleach":
+          eyebleach.bless(mainInteraction);
+          break;
+        case "waifu":
+          waifu.moe(mainInteraction);
+          break;
+        case "buzzwords":
+          buzzwords.generate(mainInteraction);
+          break;
+        case "comedy":
+          comedy.kardo(mainInteraction);
+          break;
+        case "kanye":
+          kanye.west(mainInteraction);
+          break;
+        case "insultme":
+          insult.me(mainInteraction);
+          break;
+        case "quote":
+          quote.person(mainInteraction);
+          break;
+        case 'faucetlist':
+          flist.send(mainInteraction);
+          break;
+        case "link":
+          link.start(mainInteraction, mainInteraction.user.id, con, client); //yes this is a sword art online reference
+          break;
+        case 'balance':
+          balance.check(mainInteraction, mainInteraction.user.id, con);
+          break; 
         default:
           if (mainInteraction.member.roles.cache.some(role => role.name === process.env.SERVER_OWNER) || mainInteraction.member.roles.cache.some(role => role.name === process.env.MODERATOR)) {
             switch (mainInteraction.commandName) {
