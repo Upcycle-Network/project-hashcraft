@@ -157,50 +157,12 @@ client.on("interactionCreate", async (mainInteraction) => {
           }
           break;
       }
-  } else {
-    switch (mainInteraction.commandName) {
-        case "help":
-          help.send(mainInteraction);
-          break;
-        case "stats":
-          stats.send(mainInteraction, con);
-          break;
-        case "eyebleach":
-          eyebleach.bless(mainInteraction);
-          break;
-        case "waifu":
-          waifu.moe(mainInteraction);
-          break;
-        case "buzzwords":
-          buzzwords.generate(mainInteraction);
-          break;
-        case "comedy":
-          comedy.kardo(mainInteraction);
-          break;
-        case "kanye":
-          kanye.west(mainInteraction);
-          break;
-        case "insultme":
-          insult.me(mainInteraction);
-          break;
-        case "quote":
-          quote.person(mainInteraction);
-          break;
-        case 'faucetlist':
-          flist.send(mainInteraction);
-          break;
-        case "link":
-          link.start(mainInteraction, mainInteraction.user.id, con, client); //yes this is a sword art online reference
-          break;
-        case 'balance':
-          balance.check(mainInteraction, mainInteraction.user.id, con);
-          break;
-        default:
-          index.setTitle("User not verified").setColor(0xff0000).setDescription(`Whoa there, we don't know whether you're a human or not.\nIf you want to use the faucet, verify yourself in the <#${process.env.VERIFICATION_CHANNEL}> channel.\nIf you want to link your wallet to play on Duinocraft-CE, run /link.`).setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-          await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
-          break;
+  } else if (mainInteraction.commandName === 'link'){
+      link.start(mainInteraction, mainInteraction.user.id, con, client);
+    } else {
+      index.setTitle("User not verified").setColor(0xff0000).setDescription(`Whoa there, we don't know whether you're a human or not.\nIf you want to use the faucet, verify yourself in the <#${process.env.VERIFICATION_CHANNEL}> channel.\nIf you want to link your wallet to play on Duinocraft-CE, run /link.`).setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
+      await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
     }
-  }
   }
   if (!rbt){
     setTimeout(() => { client.user.setPresence({ status: 'idle' }); }, 10000);
