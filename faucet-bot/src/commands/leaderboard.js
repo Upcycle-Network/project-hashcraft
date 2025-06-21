@@ -60,7 +60,7 @@ module.exports = {
           var content = '';
           if (!interaction.values.length){
             leaderboard.setDescription(``);
-            await interaction.edit({ embeds: [leaderboard] });
+            await interaction.update({ embeds: [leaderboard] });
           } else {
             for (i = 0; i <= interaction.values.length; i++){
             switch(interaction.values[i]){
@@ -85,7 +85,7 @@ module.exports = {
             }
             }
             leaderboard.setDescription(content);
-            await interaction.edit({ embeds: [leaderboard] });
+            await interaction.update({ embeds: [leaderboard] });
           }
         });
         }
