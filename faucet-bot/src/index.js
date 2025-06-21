@@ -88,7 +88,7 @@ client.on("interactionCreate", async (mainInteraction) => {
           mdu.pay(mainInteraction, mainInteraction.user.id, con);
           break;  
         case 'leaderboard':
-          lb.display(mainInteraction, mainInteraction.user.id, con);
+          lb.show(mainInteraction, mainInteraction.user.id, con);
           break;  
         default:
           if (mainInteraction.member.roles.cache.some(role => role.name === process.env.SERVER_OWNER) || mainInteraction.member.roles.cache.some(role => role.name === process.env.MODERATOR)) {
