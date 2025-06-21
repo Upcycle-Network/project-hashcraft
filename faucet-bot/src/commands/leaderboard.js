@@ -71,13 +71,13 @@ module.exports = {
                 }
                 break;
               case 'str':
-                content = content + `\n~~------------------------------~~\n**Streak**\n`;
+                content = content + `~~------------------------------~~\n**Streak**\n`;
                  for (s=0; s <= 9; s++){
                   content = content + `${s+1}.\t<@${result[2][s].userid}> -- \`${result[3][s].streak}\`\n`;
                 }
                 break;
               case 'clm':
-                content = content + `\n~~------------------------------~~\n**Claims**\n`;
+                content = content + `~~------------------------------~~\n**Claims**\n`;
                 for (c=0; c <= 9; c++){
                   content = content + `${c+1}.\t<@${result[4][c].userid}> -- \`${result[5][c].claims}\`\n`;
                 }
