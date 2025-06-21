@@ -33,9 +33,9 @@ module.exports = {
         .setMaxValues (3)
         .addOptions (
           options.map((opt) => new StringSelectMenuOptionBuilder()
-          .setLabel(options.label)
-          .setDescription(options.description)
-          .setValue(options.value)
+          .setLabel(opt.label)
+          .setDescription(opt.description)
+          .setValue(opt.value)
         )
         );
         const actionRow = new ActionRowBuilder.addcomponents(selectMenu);
