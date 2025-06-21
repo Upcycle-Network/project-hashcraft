@@ -65,7 +65,7 @@ module.exports = {
             for (i = 0; i <= interaction.values.length; i++){
             switch(interaction.values[i]){
               case 'mdu':
-                content = `~~----------------------~~\n**Wallet**\n`;
+                content = `~~----------------------~~\n**mDU Balance**\n`;
                 for (m=0; m <= 9; m++){
                   content = content + `${m+1}.\t<@${result[0][m].userid}> -- \`⧈${result[1][m].mdu_bal}\`\n`;
                 }
