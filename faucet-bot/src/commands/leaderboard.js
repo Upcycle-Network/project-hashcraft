@@ -28,7 +28,7 @@ module.exports = {
         ];
         const selectMenu = new StringSelectMenuBuilder()
         .setCustomId(embed.id)
-        .setPlaceholder('Choose a Parameter...')
+        .setPlaceholder('Choose Leaderboard')
         .setMinValues (0)
         .setMaxValues (3)
         .addOptions (
