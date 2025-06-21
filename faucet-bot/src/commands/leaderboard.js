@@ -56,9 +56,9 @@ module.exports = {
           filter: (i) => i.user.id === embed.user.id && i.customId === embed.id,
           time: 120_000,
         });
-        collector.on('collect', async () => {
+        collector.on('collect', async (interaction) => {
           var content = '';
-          if (!embed.values.length){
+          if (!interaction.values.length){
             leaderboard.setDescription(``);
             await embed.editReply({ embeds: [leaderboard], components: [actionRow] });
           } else {
