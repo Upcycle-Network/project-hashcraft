@@ -59,7 +59,7 @@ module.exports = {
         collector.on('collect', async (interaction) => {
           var content = '';
           if (!interaction.values.length){
-            leaderboard.setDescription(``);
+            leaderboard.setDescription(`Select a list from below.`);
             await interaction.update({ embeds: [leaderboard] });
           } else {
             for (i = 0; i <= interaction.values.length; i++){
