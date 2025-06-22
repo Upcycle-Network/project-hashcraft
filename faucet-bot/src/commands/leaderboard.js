@@ -54,7 +54,7 @@ module.exports = {
         const collector = reply.createMessageComponentCollector({
           componentType: ComponentType.StringSelect,
           filter: (i) => i.user.id === embed.user.id && i.customId === embed.id,
-          time: 120_000,
+          time: 30_000,
         });
         collector.on('collect', async (interaction) => {
           var content = '';
@@ -88,6 +88,9 @@ module.exports = {
             await interaction.update({ embeds: [leaderboard] });
           }
         });
+        collector.on("end", async () => {
+            await interaction.update({ components: [] });
+          });
         }
         });
       }
