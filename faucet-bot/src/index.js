@@ -210,12 +210,13 @@ const server = https.createServer(HTTPS_options, (req, res) => {
                     APIMessage(res, `An error occurred while getting data from DB: ${err}`, 1);
                   } else if (result.length === 0){
                     APIMessage(res, `No Users to Notify.`, 1);
-                  } else if (notifs.notifFlag(result[0].flags) == true) {
-                    APIMessage(res, `User ${result[0].userid} has turned off Notifications.`, 1);
                   } else {
                       index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#1267863776925847592> to claim your daily drop.`).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
                       const uid = result[0].userid;
-                      try{
+                      if (notifs.notifFlag(result[0].flags) == true) {
+                      APIMessage(res, `User ${result[0].userid} has turned off Notifications.`, 1);
+                      } else {
+                        try {
                         await guild.members.fetch(uid)
                         .then((member) => {
                           if (member == false){
@@ -231,6 +232,7 @@ const server = https.createServer(HTTPS_options, (req, res) => {
                         });
                     } catch (e){
                       APIMessage(res, `${uid}: This user has left the server.`, 1);
+                      }
                     }
                     dm.query(`update Faucet set reminder = '${time.format("YYYY-MM-DD")}' where Faucet.userid = ${uid}`, async function (err, result){
                       if (err){
