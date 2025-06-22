@@ -96,7 +96,7 @@ module.exports = {
           }
         });
         collector.on("end", async () => {
-            await interaction.update({ components: [] });
+            await embed.editReply({ components: [] });
           });
         }
         });
