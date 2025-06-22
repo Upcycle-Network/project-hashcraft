@@ -159,6 +159,19 @@ const commands = [
             
         ],
     },
+    {
+        name: 'notifications',
+        description: "Toggle DM Notifications On or Off.",
+        options: [
+            {
+                name: 'toggle',
+                description: 'Toggle true/false',
+                type: ApplicationCommandOptionType.Boolean,
+                required: true,
+            },
+            
+        ],
+    },
 ];
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 (async () => {

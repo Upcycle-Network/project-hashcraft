@@ -2,7 +2,7 @@ const {StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder,
 const process = require("process");
 const leaderboard = new EmbedBuilder().setTitle("Faucet Leaderboard").setColor(0xf18701).setDescription(`Select a list from below.`);
 module.exports = {
-  show: async function (embed, userid, con) {
+  show: async function (embed, con) {
     await embed.deferReply();
     con.getConnection(async function (err, conlb) {
       if (err) {

@@ -6,6 +6,7 @@ const url = require('url');
 const process = require("process");
 const mysql = require("mysql2");
 const dayjs = require('dayjs');
+const notifs = require('./commands/notifications');
 const lb = require('./commands/leaderboard');
 const help = require('./commands/help');
 const link = require('./commands/link');
@@ -88,7 +89,7 @@ client.on("interactionCreate", async (mainInteraction) => {
           mdu.pay(mainInteraction, mainInteraction.user.id, con);
           break;  
         case 'leaderboard':
-          lb.show(mainInteraction, mainInteraction.user.id, con);
+          lb.show(mainInteraction, con);
           break;
           case "help":
           help.send(mainInteraction);
@@ -125,6 +126,9 @@ client.on("interactionCreate", async (mainInteraction) => {
           break;
         case 'balance':
           balance.check(mainInteraction, mainInteraction.user.id, con);
+          break;
+        case 'notifs':
+          notifs.toggle(mainInteraction, mainInteraction.user.id, con);
           break; 
         default:
           if (mainInteraction.member.roles.cache.some(role => role.name === process.env.SERVER_OWNER) || mainInteraction.member.roles.cache.some(role => role.name === process.env.MODERATOR)) {
@@ -201,11 +205,13 @@ const server = https.createServer(HTTPS_options, (req, res) => {
               if (err) {
               APIMessage(res, `An error occurred while getting SQL Connection: ${err}`, 1);
               } else {
-                dm.query(`select userid, streak from Faucet where reminder != '${time.format("YYYY-MM-DD")}' && userid > 100 && wallet_name is not null`, async function (err, result) {
+                dm.query(`select userid, streak, flags from Faucet where reminder != '${time.format("YYYY-MM-DD")}' && userid > 100 && wallet_name is not null`, async function (err, result) {
                   if (err){
                     APIMessage(res, `An error occurred while getting data from DB: ${err}`, 1);
-                   } else if (result.length === 0){
+                  } else if (result.length === 0){
                     APIMessage(res, `No Users to Notify.`, 1);
+                  } else if (notifs.notifFlag(result[0].flags)) {
+                    APIMessage(res, `User ${result[0].userid} has turned off Notifications.`, 1);
                   } else {
                       index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#1267863776925847592> to claim your daily drop.`).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
                       const uid = result[0].userid;
