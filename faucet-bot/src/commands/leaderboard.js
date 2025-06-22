@@ -54,7 +54,7 @@ module.exports = {
         const collector = reply.createMessageComponentCollector({
           componentType: ComponentType.StringSelect,
           filter: (i) => i.user.id === embed.user.id && i.customId === embed.id,
-          time: 30_000,
+          time: 60_000,
         });
         collector.on('collect', async (interaction) => {
           var content = '';
