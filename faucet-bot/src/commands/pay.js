@@ -57,7 +57,7 @@ module.exports = {
                                       }
                                     }); 
                             } else if (payInteraction.customId == 'cancel'){
-                                payembed.setAuthor({ name: `${process.env.BOT_NAME} Payments`, iconURL: process.env.FAIL }).setColor(0xff0000).setTitle("Payment Canceled").setDescription(`Payment Cancelled by <@${userid}>.`).setTimestamp();
+                                payembed.setAuthor({ name: `${process.env.BOT_NAME} Payments`, iconURL: process.env.FAIL }).setColor(0xff0000).setTitle("Payment Canceled").setDescription(`by <@${userid}>.`).setTimestamp();
                                 await payInteraction.reply({ embeds: [payembed] });
                             }
                         });
