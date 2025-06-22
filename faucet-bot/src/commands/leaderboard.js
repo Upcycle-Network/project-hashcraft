@@ -62,7 +62,7 @@ module.exports = {
             leaderboard.setDescription(`Select a list from below.`);
             await interaction.update({ embeds: [leaderboard] });
           } else {
-            console.log (interaction.values)
+            console.log (`${interaction.values} - ${interaction.values.length}`)
             for (i = 0; i <= interaction.values.length; i++){
             switch(interaction.values[i]){
               case 'mdu':
