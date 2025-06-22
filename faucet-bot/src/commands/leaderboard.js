@@ -59,12 +59,14 @@ module.exports = {
         collector.on('collect', async (interaction) => {
           var content = '';
           if (!interaction.values.length){
-            leaderboard.setDescription(`Select a list from below.`);
+            content = `~~------------------------------~~\n**mDU Balance**\n`;
+            for (m=0; m <= 9; m++){
+              content = content + `${m+1}.\t<@${result[0][m].userid}> -- \`⧈${result[1][m].mdu_bal}\`\n`;
+            }
+            leaderboard.setDescription(content);
             await interaction.update({ embeds: [leaderboard] });
           } else {
-            console.log (`${interaction.values} - ${interaction.values.length}`)
-            for (i = 0; i <= interaction.values.length; i++){
-            switch(interaction.values[i]){
+            switch(interaction.values[0]){
               case 'mdu':
                 content = `~~------------------------------~~\n**mDU Balance**\n`;
                 for (m=0; m <= 9; m++){
@@ -83,7 +85,6 @@ module.exports = {
                   content = content + `${c+1}.\t<@${result[4][c].userid}> -- \`${result[5][c].claims}\`\n`;
                 }
                 break;
-            }
             }
             leaderboard.setDescription(content);
             await interaction.update({ embeds: [leaderboard] });
