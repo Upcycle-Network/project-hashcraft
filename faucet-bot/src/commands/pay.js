@@ -44,12 +44,13 @@ module.exports = {
                             if (payInteraction.customId == 'payconfirm'){
                                 cancel.setDisabled(true).setStyle(ButtonStyle.Secondary);
                                 payconfirm.setDisabled(true);
+                                payembed.setAuthor({ name: `${process.env.BOT_NAME } Payments`, iconURL: process.env.SUCCESS });
                                 await embed.editReply({embeds: [payembed], components: [paycomponents],});
                                 await payInteraction.deferReply();
                                 paycon.query( `update Faucet set mdu_bal = mdu_bal - ${txnamt} where Faucet.userid = ${userid}; update Faucet set mdu_bal = mdu_bal + ${txnamt} where Faucet.userid = ${uid};`,
                                     async function (err) {
                                       if (!err) {
-                                        payembed.setAuthor({ name: `${process.env.BOT_NAME} Payments`, iconURL: process.env.SUCCESS }).setColor(0x00ff00).setTitle("Payment Successful").setDescription(`Paid \`⧈${txnamt}\` to <@${uid}>.`).setTimestamp();
+                                        payembed.setAuthor({ name: `${process.env.BOT_NAME} Payments`, iconURL: process.env.SUCCESS }).setColor(0x00ff00).setTitle("Payment Successful").setDescription(`Paid \`⧈${txnamt}\` to <@${uid}>`).setTimestamp();
                                         await payInteraction.editReply({ embeds: [payembed] });
                                       } else {
                                         payembed.setTitle("DB Query Failed, Please try again.").setDescription(`Error: \n\`\`\`\n${err}\n\`\`\``).setColor(0xff0000).setTimestamp().setAuthor({ name: process.env.BOT_NAME + ' Payments', iconURL: process.env.FAIL });
@@ -57,7 +58,11 @@ module.exports = {
                                       }
                                     }); 
                             } else if (payInteraction.customId == 'cancel'){
-                                payembed.setAuthor({ name: `${process.env.BOT_NAME} Payments`, iconURL: process.env.FAIL }).setColor(0xff0000).setTitle("Payment Canceled").setDescription(`by <@${userid}>.`).setTimestamp();
+                                cancel.setDisabled(true)
+                                payconfirm.setDisabled(true).setStyle(ButtonStyle.Secondary);;
+                                payembed.setAuthor({ name: `${process.env.BOT_NAME } Payments`, iconURL: process.env.FAIL });
+                                await embed.editReply({ embeds: [payembed] , components: [paycomponents] });
+                                payembed.setAuthor({ name: `${process.env.BOT_NAME } Payments`, iconURL: process.env.FAIL }).setColor(0xff0000).setTitle("Payment Canceled").setDescription(`by <@${userid}>`).setTimestamp();
                                 await payInteraction.reply({ embeds: [payembed] });
                             }
                         });
