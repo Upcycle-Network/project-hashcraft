@@ -138,7 +138,7 @@ const commands = [
         name: 'leaderboard',
         description: `Check out the Top users of the faucet.`,
     },
-    /*{
+    {
         name: 'pay',
         description: "Pay a user in ⧈ mDU",
         options: [
@@ -159,7 +159,6 @@ const commands = [
             
         ],
     },
-    */
 ];
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
 (async () => {
