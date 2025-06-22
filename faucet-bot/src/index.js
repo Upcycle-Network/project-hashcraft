@@ -129,7 +129,7 @@ client.on("interactionCreate", async (mainInteraction) => {
           break;
         case 'notifications':
           notifs.toggle(mainInteraction, mainInteraction.user.id, con);
-          console.log(notifs.notifFlag(12));
+          console.log("index: " + notifs.notifFlag(12));
           break; 
         default:
           if (mainInteraction.member.roles.cache.some(role => role.name === process.env.SERVER_OWNER) || mainInteraction.member.roles.cache.some(role => role.name === process.env.MODERATOR)) {
