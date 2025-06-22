@@ -30,7 +30,7 @@ module.exports = {
         .setCustomId(embed.id)
         .setPlaceholder('Choose Leaderboard')
         .setMinValues (0)
-        .setMaxValues (3)
+        .setMaxValues (1)
         .addOptions (
           options.map((opt) => new StringSelectMenuOptionBuilder()
           .setLabel(opt.label)
