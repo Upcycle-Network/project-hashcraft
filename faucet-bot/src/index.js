@@ -127,7 +127,7 @@ client.on("interactionCreate", async (mainInteraction) => {
         case 'balance':
           balance.check(mainInteraction, mainInteraction.user.id, con);
           break;
-        case 'notifs':
+        case 'notifications':
           notifs.toggle(mainInteraction, mainInteraction.user.id, con);
           break; 
         default:
