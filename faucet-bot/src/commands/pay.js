@@ -31,10 +31,10 @@ module.exports = {
                   if (!err) {
                     if (result[1][0].wallet_name == null) {
                         payembed.setAuthor({ name: process.env.BOT_NAME + ' Payments', iconURL: process.env.FAIL }).setTitle(`Account not linked yet`).setDescription(`You haven't linked your Duino-Coin Account to this discord user. Run /link to do so.`).setColor(0xff0000);
-                        await embed.followUp({ embeds: [payembed] });
+                        await embed.editReply({ embeds: [payembed] });
                       } else if (result[3][0].wallet_name == null){
                         payembed.setAuthor({ name: process.env.BOT_NAME + ' Payments', iconURL: process.env.FAIL }).setTitle(`Account not linked`).setDescription(`User <@${uid}> has not linked a wallet to their UserID.`).setColor(0xff0000);
-                        await embed.followUp({ embeds: [payembed] });
+                        await embed.editReply({ embeds: [payembed] });
                       } else {
                         const userbal = result[1][0].mdu_bal;
                         if (userbal >= txnamt){
@@ -50,10 +50,10 @@ module.exports = {
                                     async function (err) {
                                       if (!err) {
                                         payembed.setAuthor({ name: `${process.env.BOT_NAME} Payments`, iconURL: process.env.SUCCESS }).setColor(0x00ff00).setTitle("Payment Successful").setDescription(`Paid \`⧈${txnamt}\` to <@${uid}>.`).setTimestamp();
-                                        await payInteraction.reply({ embeds: [payembed] });
+                                        await payInteraction.editReply({ embeds: [payembed] });
                                       } else {
                                         payembed.setTitle("DB Query Failed, Please try again.").setDescription(`Error: \n\`\`\`\n${err}\n\`\`\``).setColor(0xff0000).setTimestamp().setAuthor({ name: process.env.BOT_NAME + ' Payments', iconURL: process.env.FAIL });
-                                        await payInteraction.followUp({ embeds: [payembed] });
+                                        await payInteraction.editReply({ embeds: [payembed] });
                                       }
                                     }); 
                             } else if (payInteraction.customId == 'cancel'){
@@ -70,12 +70,12 @@ module.exports = {
                         });
                         } else {
                             payembed.setTitle("You don't have enough ⧈ mDU!").setDescription(`Current Balance: \`⧈${userbal}\``).setColor(0xff0000).setTimestamp().setAuthor({ name: process.env.BOT_NAME + ' Payments', iconURL: process.env.FAIL });
-                            await embed.followUp({ embeds: [payembed] });
+                            await embed.editReply({ embeds: [payembed] });
                         }
                     }
                   } else {
                     payembed.setTitle("DB Query Failed, Please try again.").setDescription(`Error: \n\`\`\`\n${err}\n\`\`\``).setColor(0xff0000).setTimestamp().setAuthor({ name: process.env.BOT_NAME + ' Payments', iconURL: process.env.FAIL });
-                    await embed.followUp({ embeds: [payembed] });
+                    await embed.editReply({ embeds: [payembed] });
                   }
                 });
             }
