@@ -50,6 +50,12 @@ module.exports = {
           leaderboard.setDescription(`DB Query Failed:\n\`\`\`\n${err}\n\`\`\``).setColor(0xff0000);
           await embed.editReply({ embeds: [leaderboard] });
         } else {
+        var defaultLb = '';
+        defaultLb = `~~------------------------------~~\n**mDU Balance**\n`;
+          for (m=0; m <= 9; m++){
+            defaultLb = defaultLb + `${m+1}.\t<@${result[0][m].userid}> -- \`⧈${result[1][m].mdu_bal}\`\n`;
+          }
+        leaderboard.setDescription(defaultLb);
         const reply = await embed.editReply({ embeds: [leaderboard], components: [actionRow] });
         const collector = reply.createMessageComponentCollector({
           componentType: ComponentType.StringSelect,
