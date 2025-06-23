@@ -27,7 +27,7 @@ module.exports = {
                 await embed.editReply({ embeds: [notif] });
             } else {
             const flags = convert(0, result[0].flags);
-            const notifFlag = flags.replaceAt(flags.length - 1, '' + Number(set));
+            const notifFlag = flags.replaceAt(flags.length - 1, '' + Number(!set));
             contog.query (`update Faucet set flags = ${convert(1, notifFlag)} where userid = ${userid}`, async function (err){
                 if (err){
                 notif.setTitle("DB Query Failed").setDescription(`Message:\n\`\`\`\n ${err} \n\`\`\``).setColor(0xff0000);
