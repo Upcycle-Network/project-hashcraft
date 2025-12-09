@@ -1,6 +1,6 @@
 const process = require("process");
 const { EmbedBuilder } = require("discord.js");
-const notif = new EmbedBuilder().setTitle("DM Notification Settings").setColor(0xf18701).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();;
+const notif = new EmbedBuilder().setTitle("DM Notification Settings").setColor(0xf18701).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
 String.prototype.replaceAt = function(index, replacement) {
     return this.substring(0, index) + replacement + this.substring(index + replacement.length);
 }
