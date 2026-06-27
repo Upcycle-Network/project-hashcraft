@@ -114,7 +114,6 @@ https.createServer(HTTPS_options, async (req, res) => {
         case 'reminder':
           client.db.query(`select userid, streak, flags from Faucet where last_used < ? - INTERVAL 86399 SECOND AND reminder < ? - INTERVAL 86399 SECOND AND userid > 100 AND wallet_name is not null LIMIT 1`, [date, date], async function (err, result) {
             if (err) return errorHandler.eventAPIMessage(res, `An error occurred while getting data from DB:\n${err}`, 1, eventType);
-            console.log(result);
             if (result.length === 0) return errorHandler.eventAPIMessage(res, 'No Users to notify.', 1, eventType);
             index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#${process.env.BOT_CHANNEL}> to claim your daily drop.`).setFooter({ text: `v${client.version}`, iconURL: process.env.ICON }).setTimestamp();
             const uid = result[0].userid;
