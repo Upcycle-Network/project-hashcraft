@@ -1,0 +1,20 @@
+{
+    "instruction" : "Append your faucet to the JSON array below, keeping the same template and abiding by the JSON syntax. Please do not change anything else.",
+    "faucets": [
+        {
+            "name": "DuinoFaucet",
+            "value": "[1 DUCO per 12 Hours](https://faucet.duinocoin.com/duinocoin)",
+            "inline": true
+        },
+        {
+            "name": "Amogus Faucet",
+            "value": "[0.5 - 2 DUCO every 15 Minutes, or 5 DUCO per day](https://duco-faucet.pcgeek.pl)",
+            "inline": true
+        },
+        {
+            "name": "Pastel Faucet",
+            "value": "[0.6 - 1.4 DUCO per day](https://faucet.pastelstuff.com.pl/)",
+            "inline": true
+        }
+    ]
+}

@@ -1,36 +1,31 @@
-require('dotenv').config();
-const { Client, IntentsBitField, EmbedBuilder, ActivityType, MessageFlags } = require("discord.js");
-const https = require ("https");
-const fs = require ("fs");
-const url = require('url');
-const process = require("process");
+const { Client, Collection, GatewayIntentBits, IntentsBitField, EmbedBuilder, ActivityType, Events, MessageFlags } = require("discord.js");
 const mysql = require("mysql2");
-const dayjs = require('dayjs');
-const notifs = require('./commands/notifications');
-const lb = require('./commands/leaderboard');
-const help = require('./commands/help');
-const link = require('./commands/link');
-const claim = require('./commands/claim');
-const stats = require('./commands/stats');
-const deposit = require("./commands/deposit");
-const balance = require("./commands/balance");
-const slowmode = require("./commands/slowmode");
-const purge = require("./commands/purge");
-const restart = require('./commands/restart');
-const modbal = require('./commands/modbal');
-const mdu = require('./commands/pay');
-const flist = require('./commands/faucetlist');
-const eyebleach = require('./commands/eyebleach');
-const waifu = require('./commands/waifu');
-const buzzwords = require('./commands/buzzwords');
-const comedy = require('./commands/comedy');
-const insult = require('./commands/insultme');
-const kanye = require('./commands/kanye');
-const quote = require('./commands/quote');
-const con = mysql.createPool({
+const process = require("process");
+const https = require("https");
+const fs = require("fs")
+const path = require("path");
+const errorHandler = require(__dirname + "/errorHandler");
+const pkg = require(__dirname + "/../package.json");
+const client = new Client({
+  intents: [
+    IntentsBitField.Flags.Guilds,
+    IntentsBitField.Flags.GuildMembers,
+    IntentsBitField.Flags.GuildMessages,
+    IntentsBitField.Flags.MessageContent,
+  ],
+});
+client.db = mysql.createPool({
   multipleStatements: true,
-  supportBigNumbers: true, 
+  supportBigNumbers: true,
   bigNumberStrings: true,
+  maxIdle: 2,
+  waitForConnections: true,
+  connectionLimit: 5,
+  queueLimit: 0,
+  connectTimeout: 1500,
+  idleTimeout: 30000,
+  enableKeepAlive: true,
+  keepAliveInitialDelay: 10000,
   host: process.env.MYSQL_HOST,
   user: process.env.MYSQL_USER,
   password: process.env.MYSQL_ROOT_PASSWORD,
@@ -41,139 +36,57 @@ const HTTPS_options = {
   key: fs.readFileSync('./src/server.key'),
   cert: fs.readFileSync('./src/server.cer'),
 }
-const client = new Client({
-  intents: [
-    IntentsBitField.Flags.Guilds,
-    IntentsBitField.Flags.GuildMembers,
-    IntentsBitField.Flags.GuildMessages,
-    IntentsBitField.Flags.MessageContent,
-  ],
-});
+client.version = pkg.version;
+client.commands = new Collection();
+const commandFolders = fs.readdirSync(path.join(__dirname, 'commands'));
+for (const folder of commandFolders) {
+  const commandsPath = path.join(path.join(__dirname, 'commands'), folder);
+  const commandFiles = fs.readdirSync(commandsPath).filter((file) => file.endsWith('.js'));
+  if (folder.length != 0) {
+    for (const file of commandFiles) {
+      const command = require(path.join(commandsPath, file));
+      if ('data' in command && 'execute' in command) client.commands.set(path.basename(file, path.extname(file)), command);
+      else console.warn(`[WARNING] The command at ${path.join(commandsPath, file)} is missing a required "execute" or "data" property.`);
+    }
+  } else console.log(`[INFO] The command directory ${folder} is empty, skipping.`);
+}
 const index = new EmbedBuilder();
-var rbt;
-function APIMessage (response, message, header){
-  console.log(`EVENT_API: ${message}`);
-  if (header) response.writeHead(200, {'Content-Type': 'text/plain'});
+function APIMessage(response, message, header, log) {
+  writeToLog(`EVENT_${log}: ${message}`);
+  if (header) response.writeHead(200, { 'Content-Type': 'text/plain' });
   response.write(message);
   response.end();
 }
-function endpoint (object, length){
-  return String (object.url).substring(0,length);
-}
-client.on("interactionCreate", async (mainInteraction) => {
+client.on(Events.InteractionCreate, async (mainInteraction) => {
   if (!mainInteraction.isChatInputCommand()) return;
-  client.user.setPresence({ status: 'online' });
-  if (mainInteraction.guild === null){
-    if (mainInteraction.commandName == "waifu"){
-      waifu.moe(mainInteraction);
-    } else {
-    index.setTitle("Invalid Interaction").setColor(0xff0000).setDescription(`Ew why are you sliding into my DM's\nThese commands are only usable in the ${process.env.BOT_NAME} Server`).setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-    await mainInteraction.reply({ embeds: [index] });
-    }
-  } else {
-    if (mainInteraction.member.roles.cache.some(role => role.name === process.env.VERIFIED_ROLE)) {
-      switch (mainInteraction.commandName) {
-        case 'claim':
-          claim.drop(mainInteraction, mainInteraction.user.id, con);
-          break;
-        case 'deposit':
-        if (process.env.MAINTAINENCE === 'true'){
-            index.setTitle("Command Temporarily Disabled").setColor(0xff0000).setDescription("The Bot is running on a backup server due to maintainence of main server and hence this command is non-functional.\nYou can still use the other commands.\n Sorry for the inconvenience.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-            await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
-          }
-          else {
-            deposit.transfer(mainInteraction, mainInteraction.user.id, con);
-          }
-          break;
-        case 'pay':
-          mdu.pay(mainInteraction, mainInteraction.user.id, con);
-          break;  
-        case 'leaderboard':
-          lb.show(mainInteraction, con);
-          break;
-          case "help":
-          help.send(mainInteraction);
-          break;
-        case "stats":
-          stats.send(mainInteraction, con);
-          break;
-        case "eyebleach":
-          eyebleach.bless(mainInteraction);
-          break;
-        case "waifu":
-          waifu.moe(mainInteraction);
-          break;
-        case "buzzwords":
-          buzzwords.generate(mainInteraction);
-          break;
-        case "comedy":
-          comedy.kardo(mainInteraction);
-          break;
-        case "kanye":
-          kanye.west(mainInteraction);
-          break;
-        case "insultme":
-          insult.me(mainInteraction);
-          break;
-        case "quote":
-          quote.person(mainInteraction);
-          break;
-        case 'faucetlist':
-          flist.send(mainInteraction);
-          break;
-        case "link":
-          link.start(mainInteraction, mainInteraction.user.id, con, client); //yes this is a sword art online reference
-          break;
-        case 'balance':
-          balance.check(mainInteraction, mainInteraction.user.id, con);
-          break;
-        case 'notifications':
-          notifs.toggle(mainInteraction, mainInteraction.user.id, con);
-          break; 
-        default:
-          if (mainInteraction.member.roles.cache.some(role => role.name === process.env.SERVER_OWNER) || mainInteraction.member.roles.cache.some(role => role.name === process.env.MODERATOR)) {
-            switch (mainInteraction.commandName) {
-              case 'slowmode':
-                slowmode.set(mainInteraction);
-                break;
-              case 'purge':
-                purge.execute(mainInteraction);
-                break;
-              case 'restart':
-                const reboot = await restart.execute(mainInteraction);
-                if (reboot){
-                  rbt = reboot;
-                  client.user.setStatus('invisible');
-                  setTimeout(async () => { await client.destroy(); process.exit(22) }, 15000);
-                }
-              break;
-              case 'modbal':
-                if (mainInteraction.member.roles.cache.some(role => role.name === process.env.SERVER_OWNER)) modbal.modify (mainInteraction, con);
-                else {
-                index.setTitle("Oh, Hello Moderator").setColor(0xff0000).setDescription("Only the server owner can use this command.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-                await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });}
-              break;
-              
-            }
-          } else {
-            index.setTitle("Nice try, pleb").setColor(0xff0000).setDescription("You cannot use admin commands when you're not one, duh.").setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-            await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
-          }
-          break;
-      }
-  } else if (mainInteraction.commandName === 'link'){
-      link.start(mainInteraction, mainInteraction.user.id, con, client);
-    } else {
-      index.setTitle("User not verified").setColor(0xff0000).setDescription(`Whoa there, we don't know whether you're a human or not.\nIf you want to use the faucet, verify yourself in the <#${process.env.VERIFICATION_CHANNEL}> channel.\nIf you want to link your wallet to play on Duinocraft-CE, run /link.`).setFooter({ text: `${process.env.BOT_NAME} v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-      await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
-    }
+  if (process.env.DEFER === '1') await mainInteraction.deferReply();
+  const command = client.commands.get(mainInteraction.commandName);
+  if (!command) {
+    index.setTitle("Command in development").setDescription("This command is still work in progress.").setColor(0xff0000).setFooter({ text: mainInteraction.guild.name, iconURL: mainInteraction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();
+    if (process.env.DEFER === '1') return await mainInteraction.editReply({ embeds: [index] }); else return await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
   }
-  if (!rbt){
-    setTimeout(() => { client.user.setPresence({ status: 'idle' }); }, 10000);
+  if (!mainInteraction.guild) {
+    index.setTitle("Invalid Interaction").setDescription("Commands are not allowed in DMs.").setColor(0xff0000);
+    if (process.env.DEFER === '1') return await mainInteraction.editReply({ embeds: [index] }); else return await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
+  };
+  try {
+    client.user.setPresence({ status: 'online' });
+    if (process.env.RESTART_FLAG === '0' && process.env.MAINTENANCE_MODE !== 'lockdown') await command.execute(mainInteraction, 0);
+    else {
+      index.setTitle("Permission Denied").setDescription("Commands are temporarily disabled.").setColor(0xff0000).setFooter({ text: mainInteraction.guild.name, iconURL: mainInteraction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();
+      if (process.env.DEFER === '1') return await mainInteraction.editReply({ embeds: [index] }); else return await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
+    }
+    if (mainInteraction.commandName !== 'restart') setTimeout(() => client.user.setPresence({ status: 'idle' }), 5000);
+  } catch (error) {
+    console.log(error);
+    index.setTitle("Error executing command").setDescription(`There was an error executing the command\nLog: \n\`\`\`${error}\n\`\`\``).setColor(0xff0000).setFooter({ text: mainInteraction.guild.name, iconURL: mainInteraction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();
+    if (mainInteraction.replied || mainInteraction.deferred) await mainInteraction.followUp({ embeds: [index], flags: MessageFlags.Ephemeral });
+    else await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
   }
 });
 console.log("Connecting...");
-client.on("ready", async (c) => {
+client.once(Events.ClientReady, async (c) => {
+  process.env.RESTART_FLAG = '0';
   console.log("Hashcraft Discord bot is online.");
   client.user.setPresence({
     activities: [{
@@ -184,90 +97,43 @@ client.on("ready", async (c) => {
   });
 });
 client.login(process.env.TOKEN);
-const server = https.createServer(HTTPS_options, (req, res) => {
- if (req.method === 'POST') {
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk;
-    });
-    req.on('end', async () => {
-      try {
-        const postData = JSON.parse(body);
-        if (postData.key === process.env.EVENT_KEY){
-        switch (postData.type) {
-          case "event":
-          switch (postData.event){
-          case "reminder":
-            if (postData.start){
-            const time = dayjs();
-            const guild = await client.guilds.fetch(process.env.GUILD_ID);
-            con.getConnection(async function (err, dm) {
-              if (err) {
-              APIMessage(res, `An error occurred while getting SQL Connection: ${err}`, 1);
-              } else {
-                dm.query(`select userid, streak, flags from Faucet where reminder != '${time.format("YYYY-MM-DD")}' && userid > 100 && wallet_name is not null`, async function (err, result) {
-                  if (err){
-                    APIMessage(res, `An error occurred while getting data from DB: ${err}`, 1);
-                  } else if (result.length === 0){
-                    APIMessage(res, `No Users to Notify.`, 1);
-                  } else {
-                      index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#1267863776925847592> to claim your daily drop.`).setFooter({ text: `v${process.env.BOT_VERSION}`, iconURL: process.env.ICON }).setTimestamp();
-                      const uid = result[0].userid;
-                      if (notifs.notifFlag(result[0].flags) == true) {
-                      APIMessage(res, `User ${result[0].userid} has turned off Notifications.`, 1);
-                      } else {
-                        try {
-                        await guild.members.fetch(uid)
-                        .then((member) => {
-                          if (member == false){
-                            APIMessage(res, `${uid}: This user has left the server.`, 1);
-                            } else {
-                            APIMessage(res, `Sent claim reminder to user ${uid}, streak ${result[0].streak}`, 1);
-                            client.users.send(uid, { embeds: [index] }).catch((err)=>{
-                            APIMessage(res, `This user does not allow DM's from server members.`, 0);
-                            });
-                          }
-                        }).catch ((err) => {
-                          APIMessage(res, `${uid}: This user has left the server.`, 1);
-                        });
-                    } catch (e){
-                      APIMessage(res, `${uid}: This user has left the server.`, 1);
-                      }
-                    }
-                    dm.query(`update Faucet set reminder = '${time.format("YYYY-MM-DD")}' where Faucet.userid = ${uid}`, async function (err, result){
-                      if (err){
-                        APIMessage(res, `Error accessing DB to Update: ${err}`, 1);
-                      }
-                     });
-                   }
-                });
-              }
-            dm.release();
-            });
+https.createServer(HTTPS_options, async (req, res) => {
+  if (req.method !== 'POST') return errorHandler.eventAPIMessage(res, `Events API v1.2`, 1, "API");
+  var body = '';
+  req.on('data', chunk => body += chunk);
+  req.on('end', async () => {
+    try {
+      const apiData = JSON.parse(body);
+      const eventType = apiData.event;
+      const date = new Date();
+      if (apiData.key !== process.env.EVENT_KEY) return errorHandler.eventAPIMessage(res, 'API Key authentication failed.', 1, 'ERR');
+      if (eventType === 'default') return errorHandler.eventAPIMessage(res, 'Default event triggered', 1, 'DEFAULT');
+      if (!apiData.start) return errorHandler.eventAPIMessage(res, 'Event is set to not trigger.', 1, 'ERR');
+      const guild = await client.guilds.fetch(process.env.GUILD_ID);
+      switch (eventType) {
+        case 'reminder':
+          client.db.query(`select userid, streak, flags from Faucet where last_used < ? - INTERVAL 86399 SECOND AND reminder < ? - INTERVAL 86399 SECOND AND userid > 100 AND wallet_name is not null LIMIT 1`, [date, date], async function (err, result) {
+            if (err) return errorHandler.eventAPIMessage(res, `An error occurred while getting data from DB:\n${err}`, 1, eventType);
+            if (result.length === 0) return errorHandler.eventAPIMessage(res, 'No Users to notify.', 1, eventType);
+            index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#${process.env.BOT_CHANNEL}> to claim your daily drop.`).setFooter({ text: `v${client.version}`, iconURL: process.env.ICON }).setTimestamp();
+            const uid = result[0].userid;
+            if ((result[0].flags & 1) === 1) return errorHandler.eventAPIMessage(res, `User ${uid} has turned off DM Notifications.`, 1, eventType);
+            try {
+              await guild.members.fetch(uid).then(async (member) => {
+                var caught;
+                if (!member) return errorHandler.eventAPIMessage(res, `This user has left the server.`, 1, eventType);
+                await client.users.send(uid, { embeds: [index] }).catch((err) => { errorHandler.eventAPIMessage(res, `This user does not allow DM's from server members.`, 1, eventType); caught = err });
+                return (!caught) ? errorHandler.eventAPIMessage(res, `Sent claim reminder to user ${member.displayName}, ID: ${uid}, streak ${result[0].streak}`, 1, eventType) : 0;
+              });
+            } catch (e) {
+              return errorHandler.eventAPIMessage(res, `Error while executing event: ${eventType}`, 1, 'ERR');
             }
-            break;
-          default:
-            APIMessage(res, `Default Event Triggered`, 1);
-        }
-            break;
-          default:
-            APIMessage(res, `No EventType`, 1);
-        }
-          } else {
-          APIMessage(res, `Incorrect Events API Key`, 1);
-        }
-      } catch (error) {
-        APIMessage(res, `Error Parsing Event API data.`, 1);
+          });
+          break;
+        default: return errorHandler.eventAPIMessage(res, 'Default event triggered', 1, 'DEFAULT');
       }
-    });
-  } else if (endpoint(req, 6) == "/oauth") {
-    const params = url.parse(req.url, true);
-    const queryParams = params.query;
-    APIMessage(res, `Detected Parameter: ${queryParams.code}`, 1);
-  } else {
-    APIMessage(res, `Events API v1.1`, 1);
-  }
-});
-server.listen(process.env.EVENT_PORT, () => {
-  console.log(`Hashcraft Events API listening on port ${process.env.EVENT_PORT}.`);
-});
+    } catch (e) {
+      return errorHandler.eventAPIMessage(res, `Error parsing event data`, 1, 'ERR');
+    }
+  });
+}).listen(process.env.EVENT_PORT, () => console.log(`[INFO] Events API listening on port ${process.env.EVENT_PORT}.`));
