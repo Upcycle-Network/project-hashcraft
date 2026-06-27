@@ -9,7 +9,7 @@ async function writeToLog(message) {
     const timestamp = new Date().toISOString();
     const logMessage = `[${timestamp}] ${message}\n`;
     try {
-        await asyncfs.appendFile(path.join(__dirname, 'hashcraft.log'), logMessage, 'utf8');
+        await asyncfs.appendFile(path.join(process.cwd(), 'logs', 'hashcraft.log'), logMessage, 'utf8');
     } catch (err) {
         console.error('[ERROR] Failed to write to log file:', err);
     }
