@@ -4,6 +4,7 @@ const fs = require("fs");
 const [eventType = 'default', start = 'false'] = process.argv.slice(2);
 const formattedBoolean = start.toLowerCase() === 'true';
 const postData = JSON.stringify({ "event": eventType, "key": process.env.EVENT_KEY, "start": formattedBoolean });
+process.env.NODE_EXTRA_CA_CERTS="./src/server.cer";
 const options = {
   hostname: process.env.EVENT_IP,
   port: process.env.EVENT_PORT,
@@ -16,7 +17,6 @@ const options = {
     'Content-Length': Buffer.byteLength(postData)
   }
 }
-//process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 const req = https.request(options, (res) => {
   let responseData = '';
   res.on('data', (chunk) => responseData += chunk);
