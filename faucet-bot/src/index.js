@@ -124,13 +124,13 @@ https.createServer(HTTPS_options, async (req, res) => {
                 var caught;
                 if (!member) return errorHandler.eventAPIMessage(res, `This user has left the server.`, 1, eventType);
                 await client.users.send(uid, { embeds: [index] }).catch((err) => { errorHandler.eventAPIMessage(res, `This user does not allow DM's from server members.`, 1, eventType); caught = err });
-                return (!caught) ? errorHandler.eventAPIMessage(res, `Sent claim reminder to user ${member.displayName}, ID: ${uid}, streak ${result[0].streak}`, 1, eventType) : 0;
+                if (!caught) errorHandler.eventAPIMessage(res, `Sent claim reminder to user ${member.displayName}, ID: ${uid}, streak ${result[0].streak}`, 1, eventType);
               });
             } catch (e) {
-              return errorHandler.eventAPIMessage(res, `Member ID ${uid} not found`, 1, 'ERR');
+              errorHandler.eventAPIMessage(res, `Member ID ${uid} not found`, 1, 'ERR');
             }
-            client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {
-              if (err) console.error("Could not update reminder date for user " + uid);
+            return client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {
+              if (err) return console.error("Could not update reminder date for user " + uid);
             });
           });
           break;
