@@ -125,11 +125,11 @@ https.createServer(HTTPS_options, async (req, res) => {
               await guild.members.fetch(uid).then(async (member) => {
                 var caught;
                 if (!member) return errorHandler.eventAPIMessage(res, `This user has left the server.`, 1, eventType);
-                await client.users.send(uid, { embeds: [index] }).catch((err) => { errorHandler.eventAPIMessage(res, `This user does not allow DM's from server members.`, 1, eventType); caught = err });
+                await client.users.send(uid, { embeds: [index] }).catch((err) => { errorHandler.eventAPIMessage(res, `User ${member.displayName}, ID: ${uid} does not allow DM's from server members.`, 1, eventType); caught = err });
                 if (!caught) errorHandler.eventAPIMessage(res, `Sent claim reminder to user ${member.displayName}, ID: ${uid}, streak ${result[0].streak}`, 1, eventType);
               });
             } catch (e) {
-              return errorHandler.eventAPIMessage(res, `Member ID ${uid} not found`, 1, 'ERR');
+              return errorHandler.eventAPIMessage(res, `Member ID ${uid} not found in guild`, 1, 'ERR');
             }
           });
           break;
