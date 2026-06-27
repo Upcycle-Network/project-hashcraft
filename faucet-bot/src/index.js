@@ -130,7 +130,7 @@ https.createServer(HTTPS_options, async (req, res) => {
                 if (!caught) errorHandler.eventAPIMessage(res, `Sent claim reminder to user ${member.displayName}, ID: ${uid}, streak ${result[0].streak}`, 1, eventType);
               });
             } catch (e) {
-              errorHandler.eventAPIMessage(res, `Member ID ${uid} not found`, 1, 'ERR');
+              return errorHandler.eventAPIMessage(res, `Member ID ${uid} not found`, 1, 'ERR');
             }
           });
           break;
