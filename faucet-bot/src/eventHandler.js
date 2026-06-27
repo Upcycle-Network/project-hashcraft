@@ -17,7 +17,6 @@ const options = {
   }
 }
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
-console.log(postData);
 const req = https.request(options, (res) => {
   let responseData = '';
   res.on('data', (chunk) => responseData += chunk);
