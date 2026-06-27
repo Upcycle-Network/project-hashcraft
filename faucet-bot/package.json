@@ -7,7 +7,7 @@
   "scripts": {
     "refresh": "npm i && node src/slashRegister.js && node .",
     "commandReload": "node src/slashRegister.js",
-    "event_reminder": "node --env-file=.env --use-system-ca src/eventHandler.js reminder"
+    "event_reminder": "node --env-file=.env --use-system-ca src/eventHandler.js reminder true"
   },
   "keywords": [],
   "author": "KosmicDaKerbal",
