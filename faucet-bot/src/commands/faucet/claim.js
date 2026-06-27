@@ -1,5 +1,4 @@
 const process = require("process");
-const dayjs = require('dayjs');
 const { EmbedBuilder, SlashCommandBuilder, MessageFlags } = require("discord.js");
 const errorHandler = require(__dirname + '/../../errorHandler.js');
 function calculateDrop(streak) {
