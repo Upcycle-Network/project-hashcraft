@@ -4,7 +4,7 @@ services:
     container_name: hashcraft
     restart: always
     volumes:
-      - ./hashcraft.log:/Hashcraft/hashcraft.log
+      - ./hashcraft.log:/Hashcraft/hashCraft.log
     ports:
       - 5:5
   #ngrok-hashcraft:
