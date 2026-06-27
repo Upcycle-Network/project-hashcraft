@@ -129,7 +129,7 @@ https.createServer(HTTPS_options, async (req, res) => {
             } catch (e) {
               errorHandler.eventAPIMessage(res, `Member ID ${uid} not found`, 1, 'ERR');
             }
-            return client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {
+            client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {
               if (err) return console.error("Could not update reminder date for user " + uid);
             });
           });
