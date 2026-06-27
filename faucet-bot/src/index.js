@@ -128,6 +128,9 @@ https.createServer(HTTPS_options, async (req, res) => {
             } catch (e) {
               return errorHandler.eventAPIMessage(res, `Error while executing event: ${eventType}`, 1, 'ERR');
             }
+            client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {
+              if (err) console.error("Could not update reminder date for user " + uid)
+            });
           });
           break;
         default: return errorHandler.eventAPIMessage(res, 'Default event triggered', 1, 'DEFAULT');
