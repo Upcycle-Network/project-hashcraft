@@ -114,6 +114,7 @@ https.createServer(HTTPS_options, async (req, res) => {
         case 'reminder':
           client.db.query(`select userid, streak, flags from Faucet where last_used < ? - INTERVAL 86399 SECOND AND reminder < ? - INTERVAL 86399 SECOND AND userid > 100 AND wallet_name is not null LIMIT 1`, [date, date], async function (err, result) {
             if (err) return errorHandler.eventAPIMessage(res, `An error occurred while getting data from DB:\n${err}`, 1, eventType);
+            console.log(result);
             if (result.length === 0) return errorHandler.eventAPIMessage(res, 'No Users to notify.', 1, eventType);
             index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#${process.env.BOT_CHANNEL}> to claim your daily drop.`).setFooter({ text: `v${client.version}`, iconURL: process.env.ICON }).setTimestamp();
             const uid = result[0].userid;
@@ -126,11 +127,10 @@ https.createServer(HTTPS_options, async (req, res) => {
                 return (!caught) ? errorHandler.eventAPIMessage(res, `Sent claim reminder to user ${member.displayName}, ID: ${uid}, streak ${result[0].streak}`, 1, eventType) : 0;
               });
             } catch (e) {
-              console.log(e);
-              return errorHandler.eventAPIMessage(res, `Error while executing event: ${eventType}`, 1, 'ERR');
+              return errorHandler.eventAPIMessage(res, `Member ID ${uid} not found`, 1, 'ERR');
             }
             client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {
-              if (err) console.error("Could not update reminder date for user " + uid)
+              if (err) console.error("Could not update reminder date for user " + uid);
             });
           });
           break;
