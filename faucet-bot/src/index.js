@@ -126,6 +126,7 @@ https.createServer(HTTPS_options, async (req, res) => {
                 return (!caught) ? errorHandler.eventAPIMessage(res, `Sent claim reminder to user ${member.displayName}, ID: ${uid}, streak ${result[0].streak}`, 1, eventType) : 0;
               });
             } catch (e) {
+              console.log(e);
               return errorHandler.eventAPIMessage(res, `Error while executing event: ${eventType}`, 1, 'ERR');
             }
             client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {
