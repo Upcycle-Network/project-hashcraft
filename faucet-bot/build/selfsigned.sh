@@ -1,1 +1,1 @@
-openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.cer -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=localhost"
+openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.cer -sha256 -days 3650 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=127.0.0.1" -addext "subjectAltName = IP:127.0.0.1, DNS:localhost"
