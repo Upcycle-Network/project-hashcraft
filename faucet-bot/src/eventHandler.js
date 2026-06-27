@@ -4,12 +4,12 @@ const fs = require("fs");
 const [eventType = 'default', start = 'false'] = process.argv.slice(2);
 const formattedBoolean = start.toLowerCase() === 'true';
 const postData = JSON.stringify({ "event": eventType, "key": process.env.EVENT_KEY, "start": formattedBoolean });
-process.env.NODE_EXTRA_CA_CERTS="./src/server.cer";
 const options = {
   hostname: process.env.EVENT_IP,
   port: process.env.EVENT_PORT,
   key: fs.readFileSync('./src/server.key'),
   cert: fs.readFileSync('./src/server.cer'),
+  ca: fs.readFileSync('./src/server.cer'),
   path: '/',
   method: 'POST',
   headers: {
