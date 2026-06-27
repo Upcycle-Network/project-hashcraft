@@ -118,6 +118,9 @@ https.createServer(HTTPS_options, async (req, res) => {
             if (result.length === 0) return errorHandler.eventAPIMessage(res, 'No Users to notify.', 1, eventType);
             index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#${process.env.BOT_CHANNEL}> to claim your daily drop.`).setFooter({ text: `v${client.version}`, iconURL: process.env.ICON }).setTimestamp();
             const uid = result[0].userid;
+            client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {
+              if (err) return console.error("Could not update reminder date for user " + uid);
+            });
             if ((result[0].flags & 1) === 1) return errorHandler.eventAPIMessage(res, `User ${uid} has turned off DM Notifications.`, 1, eventType);
             try {
               await guild.members.fetch(uid).then(async (member) => {
@@ -129,9 +132,6 @@ https.createServer(HTTPS_options, async (req, res) => {
             } catch (e) {
               errorHandler.eventAPIMessage(res, `Member ID ${uid} not found`, 1, 'ERR');
             }
-            client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {
-              if (err) return console.error("Could not update reminder date for user " + uid);
-            });
           });
           break;
         default: return errorHandler.eventAPIMessage(res, 'Default event triggered', 1, 'DEFAULT');
