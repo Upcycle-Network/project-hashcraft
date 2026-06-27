@@ -16,7 +16,7 @@ const options = {
     'Content-Length': Buffer.byteLength(postData)
   }
 }
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = 0;
 const req = https.request(options, (res) => {
   let responseData = '';
   res.on('data', (chunk) => responseData += chunk);
