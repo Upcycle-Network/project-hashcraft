@@ -1,6 +1,7 @@
 const { EmbedBuilder, MessageFlags } = require('discord.js');
 const process = require("process");
 const asyncfs = require("fs/promises");
+const path = require("path");
 async function sendErrorMessage(interaction, embed, force) {
     return (process.env.DEFER === '1' && force === 0) ? await interaction.editReply({ embeds: [embed] }) : await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
@@ -8,7 +9,7 @@ async function writeToLog(message) {
     const timestamp = new Date().toISOString();
     const logMessage = `[${timestamp}] ${message}\n`;
     try {
-        await asyncfs.appendFile(__dirname + '/hashcraft.log', logMessage, 'utf8');
+        await asyncfs.appendFile(path.join(__dirname, 'hashcraft.log'), logMessage, 'utf8');
     } catch (err) {
         console.error('[ERROR] Failed to write to log file:', err);
     }
