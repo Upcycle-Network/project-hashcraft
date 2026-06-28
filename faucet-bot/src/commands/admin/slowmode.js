@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const process = require("process");
 module.exports = {
     data: new SlashCommandBuilder().setName('slowmode').setDescription("Set a custom slow mode duration").addIntegerOption(option => option.setName("duration").setDescription("Duration in seconds").setRequired(true).setMinValue(1).setMaxValue(21600)),
