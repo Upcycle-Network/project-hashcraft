@@ -1,4 +1,4 @@
-const { Client, Collection, GatewayIntentBits, IntentsBitField, EmbedBuilder, ActivityType, Events, MessageFlags } = require("discord.js");
+const { Client, Collection, GatewayIntentBits, EmbedBuilder, ActivityType, Events, MessageFlags } = require("discord.js");
 const mysql = require("mysql2");
 const process = require("process");
 const https = require("https");
@@ -6,12 +6,14 @@ const fs = require("fs")
 const path = require("path");
 const errorHandler = require(__dirname + "/errorHandler");
 const pkg = require(__dirname + "/../package.json");
+const diagnosticsChannel = require("diagnostics_channel");
+const querylogger = diagnosticsChannel.tracingChannel('mysql2:query');
 const client = new Client({
   intents: [
-    IntentsBitField.Flags.Guilds,
-    IntentsBitField.Flags.GuildMembers,
-    IntentsBitField.Flags.GuildMessages,
-    IntentsBitField.Flags.MessageContent,
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
   ],
 });
 client.db = mysql.createPool({
@@ -32,6 +34,22 @@ client.db = mysql.createPool({
   database: process.env.MYSQL_DATABASE,
   port: process.env.MYSQL_PORT
 });
+const trace = {
+  start(ctx) {
+    ctx.startTime = Date.now();
+  },
+  end() { },
+  asyncStart() { },
+  asyncEnd(ctx) {
+    const duration = Date.now() - ctx.startTime;
+    errorHandler.log(`[QUERY] [${duration}ms] ${ctx.query}`);
+  },
+  error(ctx) {
+    const duration = Date.now() - ctx.startTime;
+    errorHandler.error(`[QUERY] [${duration}ms] FAILED: ${ctx.query}`, ctx.error.message);
+  },
+}
+querylogger.subscribe(trace);
 const HTTPS_options = {
   key: fs.readFileSync('./src/server.key'),
   cert: fs.readFileSync('./src/server.cer'),
@@ -51,12 +69,6 @@ for (const folder of commandFolders) {
   } else console.log(`[INFO] The command directory ${folder} is empty, skipping.`);
 }
 const index = new EmbedBuilder();
-function APIMessage(response, message, header, log) {
-  writeToLog(`EVENT_${log}: ${message}`);
-  if (header) response.writeHead(200, { 'Content-Type': 'text/plain' });
-  response.write(message);
-  response.end();
-}
 client.on(Events.InteractionCreate, async (mainInteraction) => {
   if (!mainInteraction.isChatInputCommand()) return;
   if (process.env.DEFER === '1') await mainInteraction.deferReply();
@@ -71,6 +83,7 @@ client.on(Events.InteractionCreate, async (mainInteraction) => {
   };
   try {
     client.user.setPresence({ status: 'online' });
+    errorHandler.rotateLog();
     if (process.env.RESTART_FLAG === '0' && process.env.MAINTENANCE_MODE !== 'lockdown') await command.execute(mainInteraction, 0);
     else {
       index.setTitle("Permission Denied").setDescription("Commands are temporarily disabled.").setColor(0xff0000).setFooter({ text: mainInteraction.guild.name, iconURL: mainInteraction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();
@@ -87,6 +100,7 @@ client.on(Events.InteractionCreate, async (mainInteraction) => {
 console.log("Connecting...");
 client.once(Events.ClientReady, async (c) => {
   process.env.RESTART_FLAG = '0';
+  process.env.INFORM_LOCK = '0';
   console.log("Hashcraft Discord bot is online.");
   client.user.setPresence({
     activities: [{
@@ -114,7 +128,14 @@ https.createServer(HTTPS_options, async (req, res) => {
         case 'reminder':
           client.db.query(`select userid, streak, flags from Faucet where last_used < ? - INTERVAL 86399 SECOND AND reminder < ? - INTERVAL 86399 SECOND AND userid > 100 AND wallet_name is not null LIMIT 1`, [date, date], async function (err, result) {
             if (err) return errorHandler.eventAPIMessage(res, `An error occurred while getting data from DB:\n${err}`, 1, eventType);
-            if (result.length === 0) return errorHandler.eventAPIMessage(res, 'No Users to notify.', 1, eventType);
+            if (result.length === 0) {
+              if (process.env.INFORM_LOCK === '0') {
+                process.env.INFORM_LOCK = '1';
+                return errorHandler.eventAPIMessage(res, 'No Users to notify.', 1, eventType);
+              }
+              return;
+            }
+            process.env.INFORM_LOCK = '0';
             index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#${process.env.BOT_CHANNEL}> to claim your daily drop.`).setFooter({ text: `v${client.version}`, iconURL: process.env.ICON }).setTimestamp();
             const uid = result[0].userid;
             client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {

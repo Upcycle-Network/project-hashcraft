@@ -1,0 +1,129 @@
+{
+    "instruction": "Contains the list of working API's for their corresponding commands. Keep the same template and abiding by the JSON syntax. Please do not change anything else.",
+    "duco": [
+        {
+            "name": "DuinoCoin API",
+            "host": "server.duinocoin.com"
+        }
+    ],
+    "buzzwords": [
+        {
+            "thumbnail": "https://i.postimg.cc/sgjF7LbX/image.png",
+            "onError": "https://i.postimg.cc/tCH7QXnM/istockphoto-1759020003-612x612.jpg"
+        },
+        {
+            "name": "Corporate BS Generator API",
+            "host": "corporatebs-generator.sameerkumar.website",
+            "endpoints": []
+        }
+    ],
+    "comedy": [
+        {
+            "thumbnail": "https://media.tenor.com/hwvGzPoZ_vwAAAAM/rage-meme-emoji-deepfry-emoji.gif",
+            "onError": "https://media.tenor.com/b6irvfX4ntIAAAAM/sad-crying.gif"
+        },
+        {
+            "name": "jokeapi.dev",
+            "host": "v2.jokeapi.dev",
+            "endpoints": [
+                "/joke/Any"
+            ]
+        },
+        {
+            "name": "Official Joke API",
+            "host": "official-joke-api.appspot.com",
+            "endpoints": [
+                "/jokes/random"
+            ]
+        },
+        {
+            "name": "Geek Jokes API",
+            "host": "geek-jokes.sameerkumar.website",
+            "endpoints": [
+                "/api?format=json"
+            ]
+        }
+    ],
+    "eyebleach": [
+        {
+            "name": "The Cat API",
+            "host": "api.thecatapi.com",
+            "endpoints": [
+                "/v1/images/search"
+            ]
+        },
+        {
+            "name": "random.dog API",
+            "host": "random.dog",
+            "endpoints": [
+                "/woof.json"
+            ]
+        },
+        {
+            "name": "Random Duck API",
+            "host": "random-d.uk",
+            "endpoints": [
+                "/api/v2/quack"
+            ]
+        },
+        {
+            "name": "randomfox API",
+            "host": "randomfox.ca",
+            "endpoints": [
+                "/floof/"
+            ]
+        }
+    ],
+    "insultme": [
+        {
+            "thumbnail": "https://media.tenor.com/hwvGzPoZ_vwAAAAM/rage-meme-emoji-deepfry-emoji.gif",
+            "onError": "https://media.tenor.com/b6irvfX4ntIAAAAM/sad-crying.gif"
+        },
+        {
+            "name": "LibInsult API",
+            "host": "insult.mattbas.org",
+            "endpoints": [
+                "/api/en/insult.json"
+            ]
+        }
+    ],
+    "kanye": [
+        {
+            "thumbnail": "https://media.tenor.com/K-KTshhwK4gAAAAM/kanye-kanye-weat.gif",
+            "onError": "https://media.tenor.com/4pL2t5DNPCUAAAAe/drake-drake-meme.png"
+        },
+        {
+            "name": "Kanye.REST",
+            "host": "api.kanye.rest",
+            "endpoints": []
+        }
+    ],
+    "quote": [
+        {
+            "name": "Quoterism API",
+            "host": "quoterism.com",
+            "endpoints": [
+                "/api/quotes/random"
+            ]
+        }
+    ],
+    "waifu": [
+        {
+            "name": "Waifu.im API",
+            "host": "api.waifu.im",
+            "endpoints": [
+                "/images?IncludedTags=waifu"
+            ]
+        },
+        {
+            "name": "nekos API",
+            "host": "nekos.best",
+            "endpoints": [
+                "/api/v2/kitsune",
+                "/api/v2/waifu",
+                "/api/v2/neko"
+            ]
+        }
+    ],
+    "meme": []
+}

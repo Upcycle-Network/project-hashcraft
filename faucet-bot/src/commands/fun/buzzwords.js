@@ -1,21 +1,33 @@
-const {EmbedBuilder} = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const process = require("process");
-const https = require ("https");
+const https = require("https");
+const errorHandler = require(__dirname + '/../../errorHandler.js');
 const buzzwords = new EmbedBuilder().setTitle("Corporate Bullshit Generator").setColor(0xf18701);
 module.exports = {
-  generate: async function (embed) {
-    await embed.deferReply();
-    https.get('https://corporatebs-generator.sameerkumar.website', (res) => {
+  data: new SlashCommandBuilder().setName('buzzwords').setDescription("Corporate Bullshit Generator"),
+  execute: async function (interaction) {
+    try {
+      const endpoint = require(__dirname + '/../../../apiList.json');
+      const apidata = endpoint.buzzwords;
+      https.get(`https://${apidata[1].host}`, async (res) => {
+        if (res.statusCode !== 200) return await errorHandler.APIError(interaction,  apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
         let data = "";
-        res.on("data", (chunk) => {data += chunk;});
+        res.on("data", (chunk) => data += chunk);
         res.on("end", async () => {
-        const json = JSON.parse(data);
-        buzzwords.setThumbnail("https://i.postimg.cc/sgjF7LbX/image.png").setDescription(json.phrase).setFooter({ text: `corporate-bs-generator-api`, iconURL: process.env.ICON }).setTimestamp();
-        await embed.followUp({embeds: [buzzwords]});
-    });
-    }).on("error", async (e) => {
-        buzzwords.setThumbnail("https://i.postimg.cc/tCH7QXnM/istockphoto-1759020003-612x612.jpg").setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
-        await embed.followUp({embeds: [buzzwords]});
+          try {
+            const json = JSON.parse(data);
+            buzzwords.setThumbnail(apidata[0].thumbnail).setDescription(json.phrase).setFooter({ text: 'Powered by: ' + apidata[1].name , iconURL: process.env.ICON }).setTimestamp();
+            if (process.env.DEFER === '1') await interaction.editReply({ embeds: [buzzwords] }); else await interaction.reply({ embeds: [buzzwords] });
+          } catch (e) {
+            return errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
+          }
+        });
+      }).on("error", async (e) => {
+        buzzwords.setThumbnail(apidata[0].onError).setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
+        if (process.env.DEFER === '1') await interaction.editReply({ embeds: [buzzwords] }); else await interaction.reply({ embeds: [buzzwords] });
       });
+    } catch (e) {
+      return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
+    }
   }
 }

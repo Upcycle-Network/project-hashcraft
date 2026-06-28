@@ -1,43 +1,50 @@
-const {EmbedBuilder} = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const process = require("process");
-const https = require ("https");
-const api = ["https://v2.jokeapi.dev/joke/Any", "https://official-joke-api.appspot.com/jokes/random", "https://geek-jokes.sameerkumar.website/api?format=json"];
-function random (min, max) {
-    const minCeiled = Math.ceil(min);
-    const maxFloored = Math.floor(max);
-    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
-  }
-  const comedy = new EmbedBuilder().setTitle("Bad Jokes (Please Laugh)").setColor(0xf18701);
+const https = require("https");
+const errorHandler = require(__dirname + '/../../errorHandler.js');
+const eventHandler = require(__dirname + '/../../eventHandler.js');
 module.exports = {
-  kardo: async function (embed) {
-    const i = random (0, 3);
-    await embed.deferReply();
-    https.get(api[i], (res) => {
-        let data = "";
-        res.on("data", (chunk) => {data += chunk;});
-        res.on("end", async () => {
-        const json = JSON.parse(data);
-        comedy.setThumbnail("https://media.tenor.com/hwvGzPoZ_vwAAAAM/rage-meme-emoji-deepfry-emoji.gif").setTimestamp();
-        switch (i){
-            case 0:
-                if (json.type == 'single'){
-                    comedy.setDescription(json.joke).setFooter({ text: `Powered by jokeapi.dev`, iconURL: process.env.ICON });
-                } else{
-                    comedy.setTitle(json.setup).setDescription(json.delivery).setFooter({ text: `Powered by jokeapi.dev`, iconURL: process.env.ICON });
-                }
-                break;
-            case 1:
-                comedy.setTitle(json.setup).setDescription(json.punchline).setFooter({ text: `Powered by official-joke-api`, iconURL: process.env.ICON });
-                break;
-            case 2:
-                comedy.setDescription(json.joke).setFooter({ text: `Powered by geek-jokes`, iconURL: process.env.ICON });
-                break;
+    data: new SlashCommandBuilder().setName('comedy').setDescription("Please laugh"),
+    execute: async function (interaction) {
+        try {
+            const endpoint = require(__dirname + '/../../../apiList.json');
+            const apidata = endpoint.comedy;
+            const i = eventHandler.random(1, apidata.length);
+            const comedy = new EmbedBuilder().setThumbnail(apidata[0].thumbnail).setTitle("Bad Jokes (Please Laugh)").setColor(0xf18701).setFooter({ text: 'Powered by: ' + apidata[i].name, iconURL: process.env.ICON });
+            https.get(`https://${apidata[i].host}${apidata[i].endpoints[0]}`, async (res) => {
+                if (res.statusCode !== 200) return await errorHandler.APIError(interaction,  apidata[i].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
+                let data = "";
+                res.on("data", (chunk) => { data += chunk; });
+                res.on("end", async () => {
+                    try {
+                        const json = JSON.parse(data);
+                        switch (i) {
+                            case 1:
+                                if (json.type == 'single') {
+                                    comedy.setDescription(json.joke);
+                                } else {
+                                    comedy.setTitle(json.setup).setDescription(json.delivery);
+                                }
+                                break;
+                            case 2:
+                                comedy.setTitle(json.setup).setDescription(json.punchline);
+                                break;
+                            case 3:
+                                comedy.setDescription(json.joke);
+                                break;
+                            default: return errorHandler.customErrorMessage(interaction, "Error", "New API has been added, but it doesn't have function.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "Unhandled Case");
+                        }
+                        if (process.env.DEFER === '1') await interaction.editReply({ embeds: [comedy] }); else await interaction.reply({ embeds: [comedy] });
+                    } catch (e) {
+                        return errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
+                    }
+                });
+            }).on("error", async (e) => {
+                comedy.setThumbnail(apidata[0].onError).setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
+                if (process.env.DEFER === '1') await interaction.editReply({ embeds: [comedy] }); else await interaction.reply({ embeds: [comedy] });
+            });
+        } catch (e) {
+            return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
         }
-        await embed.followUp({embeds: [comedy]});
-    });
-    }).on("error", async (e) => {
-        comedy.setThumbnail("https://media.tenor.com/b6irvfX4ntIAAAAM/sad-crying.gif").setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
-        await embed.followUp({embeds: [comedy]});
-      });
-  }
+    }
 }

@@ -1,21 +1,33 @@
-const {EmbedBuilder} = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const process = require("process");
-const https = require ("https");
+const https = require("https");
+const errorHandler = require(__dirname + '/../../errorHandler.js');
 const insult = new EmbedBuilder().setTitle("An Insult for You").setColor(0xf18701);
 module.exports = {
-  me: async function (embed) {
-    await embed.deferReply();
-    https.get(`https://evilinsult.com/generate_insult.php?lang=en&type=json`, (res) => {
+  data: new SlashCommandBuilder().setName('insultme').setDescription("Bad insults made by worse clankers"),
+  execute: async function (interaction) {
+    try {
+      const endpoint = require(__dirname + '/../../../apiList.json');
+      const apidata = endpoint.insultme;
+      https.get(`https://${apidata[1].host}${apidata[1].endpoints[0]}`, async (res) => {
+        if (res.statusCode !== 200) return await errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
         let data = "";
-        res.on("data", (chunk) => {data += chunk;});
+        res.on("data", (chunk) => data += chunk);
         res.on("end", async () => {
-        const json = JSON.parse(data);
-        insult.setThumbnail("https://media.tenor.com/hwvGzPoZ_vwAAAAM/rage-meme-emoji-deepfry-emoji.gif").setDescription(json.insult).setFooter({ text: `Powered by evilinsult.com`, iconURL: process.env.ICON }).setTimestamp();
-        await embed.followUp({embeds: [insult]});
-    });
-    }).on("error", async (e) => {
-        insult.setThumbnail("https://media.tenor.com/b6irvfX4ntIAAAAM/sad-crying.gif").setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
-        await embed.followUp({embeds: [insult]});
+          try {
+            const json = JSON.parse(data);
+            insult.setThumbnail(apidata[0].thumbnail).setDescription(json.insult).setFooter({ text: 'Powered by: ' + apidata[1].name, iconURL: process.env.ICON }).setTimestamp();
+            if (process.env.DEFER === '1') await interaction.editReply({ embeds: [insult] }); else await interaction.reply({ embeds: [insult] });
+          } catch (e) {
+            return errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
+          }
+        });
+      }).on("error", async (e) => {
+        insult.setThumbnail(apidata[0].onError).setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
+        if (process.env.DEFER === '1') await interaction.editReply({ embeds: [insult] }); else await interaction.reply({ embeds: [insult] });
       });
+    } catch (e) {
+      return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
+    }
   }
 }

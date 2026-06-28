@@ -22,3 +22,10 @@ const req = https.request(options, (res) => {
 }).on('error', (error) => console.error('Error:', error));
 req.write(postData);
 req.end();
+module.exports = {
+  random: function (min, max) {
+    const minCeiled = Math.ceil(min);
+    const maxFloored = Math.floor(max);
+    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
+  }
+}

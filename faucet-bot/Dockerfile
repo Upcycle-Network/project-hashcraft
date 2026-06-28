@@ -1,5 +1,5 @@
 FROM node:alpine
-WORKDIR /HashCraft
-COPY . /HashCraft
+WORKDIR /bot
+COPY . /bot
 RUN npm i
 ENTRYPOINT ["node","--env-file=.env", "."]

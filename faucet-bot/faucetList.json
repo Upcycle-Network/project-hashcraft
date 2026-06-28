@@ -1,5 +1,5 @@
 {
-    "instruction" : "Append your faucet to the JSON array below, keeping the same template and abiding by the JSON syntax. Please do not change anything else.",
+    "instruction": "Append your faucet to the JSON array below, keeping the same template and abiding by the JSON syntax. Please do not change anything else.",
     "faucets": [
         {
             "name": "DuinoFaucet",

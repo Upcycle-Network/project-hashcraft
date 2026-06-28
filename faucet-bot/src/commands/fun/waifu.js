@@ -1,52 +1,52 @@
-const {EmbedBuilder} = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const process = require("process");
-const http = require ("https");
-const host = ['waifu.it', 'api.waifu.pics', 'api.waifu.im', 'nekos.best'];
-const path = [['/api/v4/waifu', '/api/v4/waifu'], ['/sfw/waifu', '/sfw/neko', '/sfw/shinobu', '/sfw/megumin'], ['/search'], ['/api/v2/husbando', '/api/v2/kitsune', '/api/v2/waifu', '/api/v2/neko']];
-function random (min, max) {
-    const minCeiled = Math.ceil(min);
-    const maxFloored = Math.floor(max);
-    return Math.floor(Math.random() * (maxFloored - minCeiled) + minCeiled);
-  }
-  const waifu = new EmbedBuilder().setTitle("Random Anime Waifu/Husbando").setColor(0xf18701);
+const http = require("https");
+const errorHandler = require(__dirname + '/../../errorHandler.js');
+const eventHandler = require(__dirname + '/../../eventHandler.js');
+const waifu = new EmbedBuilder().setTitle("Random Anime Waifu").setColor(0xf18701);
 module.exports = {
-  moe: async function (embed) {
-    const i = random (0, 4);
-    await embed.deferReply();
-    const options = {
-        hostname: host[i],
-        path: path[i][random (0, path[i].length)],
-        headers: {
-            'Authorization': process.env.WAIFUIT_ID,
-            'User-Agent': `${process.env.BOT_NAME} ${process.env.BOT_VERSION}`
+    data: new SlashCommandBuilder().setName('waifu').setDescription("Shows a random anime waifu image"),
+    execute: async function (interaction) {
+        try {
+            const endpoint = require(__dirname + '/../../../apiList.json');
+            const apidata = endpoint.waifu;
+            const i = eventHandler.random(0, apidata.length);
+            const j = (apidata[i].endpoints.length > 1) ? eventHandler.random(0, apidata[i].endpoints.length) : 0;
+            const options = {
+                hostname: apidata[i].host,
+                path: apidata[i].endpoints[j],
+                headers: {
+                    'User-Agent': `${process.env.BOT_NAME} ${interaction.client.version}`
+                }
+            };
+            http.get(options, async (res) => {
+                if (res.statusCode !== 200) return await errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
+                let data = "";
+                res.on("data", (chunk) => { data += chunk; });
+                res.on("end", async () => {
+                    try {
+                        const json = JSON.parse(data);
+                        waifu.setTimestamp().setFooter({ text: 'Powered by: ' + apidata[i].name, iconURL: process.env.ICON });
+                        switch (i) {
+                            case 0:
+                                waifu.setImage(json.items[0].url);
+                                break;
+                            case 1:
+                                waifu.setImage(json.results[0].url);
+                                break;
+                            default: return await errorHandler.customErrorMessage(interaction, "Error", "New API has been added, but it doesn't have function.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "Unhandled Case");
+                        }
+                        if (process.env.DEFER === '1') await interaction.editReply({ embeds: [waifu] }); else await interaction.reply({ embeds: [waifu] });
+                    } catch (e) {
+                        return await errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
+                    }
+                });
+            }).on("error", async (e) => {
+                waifu.setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
+                if (process.env.DEFER === '1') await interaction.editReply({ embeds: [waifu] }); else await interaction.reply({ embeds: [waifu] });
+            });
+        } catch (e) {
+            return await errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
         }
-    };
-    http.get(options, (res) => {
-        let data = "";
-        res.on("data", (chunk) => {data += chunk;});
-        res.on("end", async () => {
-        
-        const json = JSON.parse(data);
-        waifu.setTimestamp().setFooter({ text: `Powered by ${host[i]}`, iconURL: process.env.ICON });
-        switch (i){
-            case 0:
-                waifu.setImage(`${json.image.large}`);
-                break;
-            case 1:
-                waifu.setImage(`${json.url}`);
-                break;
-            case 2:
-                waifu.setImage(`${json.images[0].url}`);
-                break;
-            case 3:
-                waifu.setImage(`${json.results[0].url}`);
-                break;
-        }
-        await embed.followUp({embeds: [waifu]});
-    });
-    }).on("error", async (e) => {
-        waifu.setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
-        await embed.followUp({embeds: [waifu]});
-      });
-  }
+    }
 }

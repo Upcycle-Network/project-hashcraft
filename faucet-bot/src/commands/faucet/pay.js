@@ -44,7 +44,7 @@ module.exports = {
               cancel.setDisabled(true)
               payconfirm.setDisabled(true).setStyle(ButtonStyle.Secondary);;
               payembed.setAuthor({ name: `${process.env.BOT_NAME} Payments`, iconURL: process.env.FAIL }).setColor(0xff0000).setTitle("Payment Canceled").setDescription(`by <@${userid}>`).setTimestamp();
-              await payInteraction.update({ embeds: [payembed], components: [paycomponents]});
+              await payInteraction.update({ embeds: [payembed], components: [paycomponents] });
             }
           });
           paycollector.on("end", async () => {
