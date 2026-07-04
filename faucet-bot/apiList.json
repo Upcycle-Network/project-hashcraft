@@ -3,7 +3,8 @@
     "duco": [
         {
             "name": "DuinoCoin API",
-            "host": "server.duinocoin.com"
+            "host": "server.duinocoin.com",
+            "endpoints": ["/v2/users/", "/transaction/?username=", "&password=", "&recipient=", "&amount=", "&memo=HashCraft Faucet https://discord.gg/vH8fxYZcr8"]
         }
     ],
     "buzzwords": [

@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require("discord.js");
 const process = require("process");
 const https = require("https");
 const errorHandler = require(__dirname + '/../../errorHandler.js');
@@ -15,7 +15,8 @@ module.exports = {
         headers: {
           'X-API-Key': process.env.QUOTERISM_API_KEY,
           'User-Agent': `${process.env.BOT_NAME} ${interaction.client.version}`
-        }
+        },
+        timeout: 1500
       };
       https.get(options, async (res) => {
         if (res.statusCode !== 200) return await errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
@@ -30,9 +31,10 @@ module.exports = {
             return errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
           }
         });
+      }).on('timeout', async () => {
+        return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout');
       }).on("error", async (e) => {
-        quote.setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
-        if (process.env.DEFER === '1') await interaction.editReply({ embeds: [quote] }); else await interaction.reply({ embeds: [quote] });
+        return errorHandler.APIError(interaction, "Error while fetching API Request: ```\n" + e + "\n```", 'HTTPS Stream Interrupt');
       });
     } catch (e) {
       return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");

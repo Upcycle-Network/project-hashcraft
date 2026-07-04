@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require("discord.js");
 const process = require("process");
 const https = require("https");
 const errorHandler = require(__dirname + '/../../errorHandler.js');
@@ -11,7 +11,15 @@ module.exports = {
             const apidata = endpoint.eyebleach;
             const i = eventHandler.random(0, apidata.length);
             const eyebleach = new EmbedBuilder().setThumbnail(apidata[0].thumbnail).setTitle("Cute animals to make your day better").setColor(0xf18701).setFooter({ text: 'Powered by: ' + apidata[i].name, iconURL: process.env.ICON });
-            https.get(`https://${apidata[i].host}${apidata[i].endpoints[0]}`, async (res) => {
+            const options = {
+                hostname: apidata[i].host,
+                path: apidata[i].endpoints[0],
+                headers: {
+                    'User-Agent': `${process.env.BOT_NAME} ${interaction.client.version}`
+                },
+                timeout: 1500
+            };
+            https.get(options, async (res) => {
                 if (res.statusCode !== 200) return await errorHandler.APIError(interaction, apidata[i].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
                 let data = "";
                 res.on("data", (chunk) => { data += chunk; });
@@ -31,12 +39,13 @@ module.exports = {
                         }
                         if (process.env.DEFER === '1') await interaction.editReply({ embeds: [eyebleach] }); else await interaction.reply({ embeds: [eyebleach] });
                     } catch (e) {
-                        return await errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
+                        return await errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail');
                     }
                 });
+            }).on('timeout', async () => {
+                return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout');
             }).on("error", async (e) => {
-                eyebleach.setThumbnail(apidata[0].onError).setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
-                if (process.env.DEFER === '1') await interaction.editReply({ embeds: [eyebleach] }); else await interaction.reply({ embeds: [eyebleach] });
+                return errorHandler.APIError(interaction, "Error while fetching API Request: ```\n" + e + "\n```", 'HTTPS Stream Interrupt');
             });
         } catch (e) {
             return await errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");

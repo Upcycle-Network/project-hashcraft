@@ -17,26 +17,41 @@ module.exports = {
       if (recip === null) return errorHandler.customErrorMessage(interaction, 'Account not linked yet', `You haven't linked your Duino-Coin Account to this discord user. Run /link to do so.`, process.env.BOT_NAME);
       if (bal < dep) return errorHandler.customErrorMessage(interaction, `You don't have enough mDU!`, "Current balance: ⧈" + bal, process.env.BOT_NAME);
       if (process.env.TXN_HANDLER === 'self') {
-        const url = `https://server.duinocoin.com/transaction/?username=` + encodeURIComponent(process.env.MASTER_USER) + `&password=` + encodeURIComponent(process.env.MASTER_KEY) + `&recipient=` + encodeURIComponent(recip) + `&amount=` + encodeURIComponent(dep / 100) + `&memo=HashCraft Faucet https://discord.gg/vH8fxYZcr8`;
-        https.get(url, (res) => {
-          if (res.statusCode !== 200) return errorHandler.APIError(interaction, "Transaction cannot be completed. Please try again later.", `Error Code: ${res.statusCode}`);
-          let data = "";
-          res.on("data", (chunk) => data += chunk);
-          res.on("end", async () => {
-            try {
-              const json = JSON.parse(data);
-              if (!json.success) return errorHandler.APIError(interaction, 'Deposit Failed', 'DUCO  API Error');
-              interaction.client.db.query(`update Faucet set mdu_bal = ? where Faucet.userid = ?; update Faucet set mdu_bal = mdu_bal + ?, claims = claims + 1 where Faucet.userid = 1;`, [bal - dep, userid, dep], async function (err) {
-                if (err) return errorHandler.dbQueryError(interaction, 'Error', err);
-                const txid = String(json.result).split(",")[2];
-                deposit.setAuthor({ name: `${process.env.BOT_NAME} Faucet`, iconURL: process.env.SUCCESS }).setTitle("Deposit Successful").setColor(0x00ff00).setDescription(`Successfully converted \`⧈${dep}\` into \`${dep / 100} ↁ\` and sent to Account: ${recip}\nTxID: [${txid}](https://explorer.duinocoin.com?search=${txid})`).setTimestamp();
-                if (process.env.DEFER === '1') await interaction.editReply({ embeds: [deposit] }); else await interaction.reply({ embeds: [deposit] });
-              });
-            } catch (e) {
-              return errorHandler.APIError(interaction, 'Deposit Failed', 'JSON parse fail');
-            }
-          });
-        }).on("error", async (e) => { return errorHandler.APIError(interaction, 'Deposit Failed', e.code); });
+        try {
+          const endpoint = require(__dirname + '/../../../apiList.json');
+          const apidata = endpoint.duco;
+          const options = {
+            hostname: apidata[0].host,
+            path: apidata[0].endpoints[1] + encodeURIComponent(process.env.MASTER_USER) + apidata[0].endpoints[2] + encodeURIComponent(process.env.MASTER_KEY) + apidata[0].endpoints[3] + encodeURIComponent(recip) + apidata[0].endpoints[4] + encodeURIComponent(dep / 100) + encodeURI(apidata[0].endpoints[5]),
+            headers: {
+              'User-Agent': `${process.env.BOT_NAME} ${interaction.client.version}`
+            },
+            timeout: 1500
+          };
+          https.get(options, (res) => {
+            if (res.statusCode !== 200) return errorHandler.APIError(interaction, "Transaction cannot be completed. Please try again later.", `Error Code: ${res.statusCode}`);
+            let data = "";
+            res.on("data", (chunk) => data += chunk);
+            res.on("end", async () => {
+              try {
+                const json = JSON.parse(data);
+                if (!json.success) return errorHandler.APIError(interaction, 'Deposit Failed', 'DUCO  API Error');
+                interaction.client.db.query(`update Faucet set mdu_bal = ? where Faucet.userid = ?; update Faucet set mdu_bal = mdu_bal + ?, claims = claims + 1 where Faucet.userid = 1;`, [bal - dep, userid, dep], async function (err) {
+                  if (err) return errorHandler.dbQueryError(interaction, 'Error', err);
+                  const txid = String(json.result).split(",")[2];
+                  deposit.setAuthor({ name: `${process.env.BOT_NAME} Faucet`, iconURL: process.env.SUCCESS }).setTitle("Deposit Successful").setColor(0x00ff00).setDescription(`Successfully converted \`⧈${dep}\` into \`${dep / 100} ↁ\` and sent to Account: ${recip}\nTxID: [${txid}](https://explorer.duinocoin.com?search=${txid})`).setTimestamp();
+                  if (process.env.DEFER === '1') await interaction.editReply({ embeds: [deposit] }); else await interaction.reply({ embeds: [deposit] });
+                });
+              } catch (e) {
+                return errorHandler.APIError(interaction, 'Deposit Failed', 'JSON parse fail');
+              }
+            });
+          }).on('timeout', async () => { return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout'); })
+            .on("error", async (e) => { return errorHandler.APIError(interaction, 'Deposit Failed', e.code); });
+        } catch (e) {
+          console.log(e);
+          return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
+        }
       } else {
         const transactionMessage = JSON.stringify({
           'userid': userid,

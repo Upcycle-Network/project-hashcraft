@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require("discord.js");
 const process = require("process");
 const https = require("https");
 const errorHandler = require(__dirname + '/../../errorHandler.js');
@@ -11,8 +11,16 @@ module.exports = {
             const apidata = endpoint.comedy;
             const i = eventHandler.random(1, apidata.length);
             const comedy = new EmbedBuilder().setThumbnail(apidata[0].thumbnail).setTitle("Bad Jokes (Please Laugh)").setColor(0xf18701).setFooter({ text: 'Powered by: ' + apidata[i].name, iconURL: process.env.ICON });
-            https.get(`https://${apidata[i].host}${apidata[i].endpoints[0]}`, async (res) => {
-                if (res.statusCode !== 200) return await errorHandler.APIError(interaction,  apidata[i].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
+            const options = {
+                hostname: apidata[i].host,
+                path: apidata[i].endpoints[0],
+                headers: {
+                    'User-Agent': `${process.env.BOT_NAME} ${interaction.client.version}`
+                },
+                timeout: 1500
+            };
+            https.get(options, async (res) => {
+                if (res.statusCode !== 200) return await errorHandler.APIError(interaction, apidata[i].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
                 let data = "";
                 res.on("data", (chunk) => { data += chunk; });
                 res.on("end", async () => {
@@ -39,9 +47,12 @@ module.exports = {
                         return errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
                     }
                 });
+            }).on('timeout', async () => {
+                comedy.setThumbnail(apidata[0].onError).setDescription("Error while fetching API Request: ```\nETIMEDOUT\n```").setColor(0xff0000).setTimestamp();
+                if (process.env.DEFER === '1') await interaction.editReply({ embeds: [comedy] }); else await interaction.reply({ embeds: [comedy], flags: MessageFlags.Ephemeral });
             }).on("error", async (e) => {
                 comedy.setThumbnail(apidata[0].onError).setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
-                if (process.env.DEFER === '1') await interaction.editReply({ embeds: [comedy] }); else await interaction.reply({ embeds: [comedy] });
+                if (process.env.DEFER === '1') await interaction.editReply({ embeds: [comedy] }); else await interaction.reply({ embeds: [comedy], flags: MessageFlags.Ephemeral });
             });
         } catch (e) {
             return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
