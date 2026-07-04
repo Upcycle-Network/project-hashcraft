@@ -51,8 +51,8 @@ const trace = {
 }
 querylogger.subscribe(trace);
 const HTTPS_options = {
-  key: fs.readFileSync('./src/server.key'),
-  cert: fs.readFileSync('./src/server.cer'),
+  key: fs.readFileSync(__dirname + '/server.key'),
+  cert: fs.readFileSync(__dirname + '/server.cer'),
 }
 client.version = pkg.version;
 client.commands = new Collection();

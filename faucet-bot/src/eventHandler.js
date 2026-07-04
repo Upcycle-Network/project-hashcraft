@@ -7,7 +7,7 @@ const postData = JSON.stringify({ "event": eventType, "key": process.env.EVENT_K
 const options = {
   hostname: process.env.EVENT_IP,
   port: process.env.EVENT_PORT,
-  ca: fs.readFileSync('./src/server.cer'),
+  ca: fs.readFileSync(__dirname + '/server.cer'),
   path: '/',
   method: 'POST',
   headers: {
