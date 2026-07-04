@@ -4,7 +4,7 @@ const fs = require("fs");
 const asyncfs = require("fs/promises");
 const path = require("path");
 const zlib = require("zlib");
-const logPath = path.join(process.cwd(), 'logs', 'hashcraft.log');
+const logPath = path.join(__dirname, 'logs', 'hashcraft.log');
 process.env.REDIRECT = '0';
 function getTimestamp() {
     return new Date().toISOString().split('.')[0].replace(/:/g, '-').replace('T', ' ').replace('Z', '');
