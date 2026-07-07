@@ -18,7 +18,7 @@ module.exports = {
                 headers: {
                     'User-Agent': `${process.env.BOT_NAME} ${interaction.client.version}`
                 },
-                timeout: 1500
+                timeout: 5
             };
             http.get(options, async (res) => {
                 if (res.statusCode !== 200) return errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
