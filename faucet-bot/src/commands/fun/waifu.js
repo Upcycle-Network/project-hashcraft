@@ -21,7 +21,7 @@ module.exports = {
                 timeout: 1500
             };
             http.get(options, async (res) => {
-                if (res.statusCode !== 200) return await errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
+                if (res.statusCode !== 200) return errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
                 let data = "";
                 res.on("data", (chunk) => { data += chunk; });
                 res.on("end", async () => {
@@ -35,11 +35,11 @@ module.exports = {
                             case 1:
                                 waifu.setImage(json.results[0].url);
                                 break;
-                            default: return await errorHandler.customErrorMessage(interaction, "Error", "New API has been added, but it doesn't have function.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "Unhandled Case");
+                            default: return errorHandler.customErrorMessage(interaction, "Error", "New API has been added, but it doesn't have function.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "Unhandled Case");
                         }
                         if (process.env.DEFER === '1') await interaction.editReply({ embeds: [waifu] }); else await interaction.reply({ embeds: [waifu] });
                     } catch (e) {
-                        return await errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
+                        return errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
                     }
                 });
             }).on('timeout', async () => {
@@ -48,7 +48,7 @@ module.exports = {
                 return errorHandler.APIError(interaction, "Error while fetching API Request: ```\n" + e + "\n```", 'HTTPS Stream Interrupt');
             });
         } catch (e) {
-            return await errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
+            return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
         }
     }
 }

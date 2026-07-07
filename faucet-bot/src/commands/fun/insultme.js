@@ -18,7 +18,7 @@ module.exports = {
         timeout: 1500
       };
       https.get(options, async (res) => {
-        if (res.statusCode !== 200) return await errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
+        if (res.statusCode !== 200) return errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
         let data = "";
         res.on("data", (chunk) => data += chunk);
         res.on("end", async () => {
