@@ -1,0 +1,2 @@
+#!/data/data/com.termux/files/usr/bin/sh
+exec /data/data/com.termux/files/usr/bin/node --env-file=/data/data/com.termux/files/home/project-hashcraft/faucet-bot/.env /data/data/com.termux/files/home/project-hashcraft/faucet-bot/src/index.js >> /data/data/com.termux/files/home/project-hashcraft/faucet-bot/logs/stdout.log 2>&1

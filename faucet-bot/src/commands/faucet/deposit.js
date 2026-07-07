@@ -26,7 +26,7 @@ module.exports = {
             headers: {
               'User-Agent': `${process.env.BOT_NAME} ${interaction.client.version}`
             },
-            timeout: 1500
+            timeout: (process.env.DEFER === '1') ? 5000 : 2000
           };
           let timeoutLock = false;
           https.get(options, (res) => {
