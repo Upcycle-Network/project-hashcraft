@@ -20,12 +20,13 @@ module.exports = {
                 },
                 timeout: 5
             };
+            let timeoutLock = false;
             http.get(options, async (res) => {
                 if (res.statusCode !== 200) return errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
                 let data = "";
                 res.on("data", (chunk) => { data += chunk; });
-                res.on("end", async (parameters) => {
-                    console.log(parameters);
+                res.on("end", async () => {
+                    if (timeoutLock) return;
                     try {
                         const json = JSON.parse(data);
                         waifu.setTimestamp().setFooter({ text: 'Powered by: ' + apidata[i].name, iconURL: process.env.ICON });
@@ -40,10 +41,11 @@ module.exports = {
                         }
                         if (process.env.DEFER === '1') await interaction.editReply({ embeds: [waifu] }); else await interaction.reply({ embeds: [waifu] });
                     } catch (e) {
-                        //return errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
+                        return errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail')
                     }
                 });
             }).on('timeout', async () => {
+                timeoutLock = true;
                 return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout');
             }).on("error", async (e) => {
                 return errorHandler.APIError(interaction, "Error while fetching API Request: ```\n" + e + "\n```", 'HTTPS Stream Interrupt');
