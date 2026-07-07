@@ -46,7 +46,7 @@ const trace = {
   },
   error(ctx) {
     const duration = Date.now() - ctx.startTime;
-    errorHandler.error(`[QUERY] [${duration}ms] FAILED: ${ctx.query}`, ctx.error.message);
+    errorHandler.log(`[QUERY] [${duration}ms] FAILED: ${ctx.query}`, ctx.error.message);
   },
 }
 querylogger.subscribe(trace);
