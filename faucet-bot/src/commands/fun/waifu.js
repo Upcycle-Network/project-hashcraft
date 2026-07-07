@@ -45,7 +45,7 @@ module.exports = {
             }).on('timeout', async () => {
                 return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout');
             }).on("error", async (e) => {
-                //return errorHandler.APIError(interaction, "Error while fetching API Request: ```\n" + e + "\n```", 'HTTPS Stream Interrupt');
+                return errorHandler.APIError(interaction, "Error while fetching API Request: ```\n" + e + "\n```", 'HTTPS Stream Interrupt');
             });
         } catch (e) {
             //return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
