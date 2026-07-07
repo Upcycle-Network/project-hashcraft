@@ -17,11 +17,13 @@ module.exports = {
         },
         timeout: 1500
       };
+      let timeoutLock = false;
       https.get(options, async (res) => {
         if (res.statusCode !== 200) return errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
         let data = "";
         res.on("data", (chunk) => data += chunk);
         res.on("end", async () => {
+          if (timeoutLock) return;
           try {
             const json = JSON.parse(data);
             insult.setThumbnail(apidata[0].thumbnail).setDescription(json.insult).setFooter({ text: 'Powered by: ' + apidata[1].name, iconURL: process.env.ICON }).setTimestamp();
@@ -31,6 +33,7 @@ module.exports = {
           }
         });
       }).on('timeout', async () => {
+        timeoutLock = true;
         insult.setThumbnail(apidata[0].onError).setDescription("Error while fetching API Request: ```\nETIMEDOUT\n```").setColor(0xff0000).setTimestamp();
         if (process.env.DEFER === '1') await interaction.editReply({ embeds: [insult] }); else await interaction.reply({ embeds: [insult], flags: MessageFlags.Ephemeral });
       }).on("error", async (e) => {

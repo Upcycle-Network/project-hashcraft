@@ -19,11 +19,13 @@ module.exports = {
                 },
                 timeout: 1500
             };
+            let timeoutLock = false;
             https.get(options, async (res) => {
                 if (res.statusCode !== 200) return errorHandler.APIError(interaction, apidata[i].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
                 let data = "";
                 res.on("data", (chunk) => { data += chunk; });
                 res.on("end", async () => {
+                    if (timeoutLock) return;
                     try {
                         const json = JSON.parse(data);
                         switch (i) {
@@ -43,6 +45,7 @@ module.exports = {
                     }
                 });
             }).on('timeout', async () => {
+                timeoutLock = true;
                 return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout');
             }).on("error", async (e) => {
                 return errorHandler.APIError(interaction, "Error while fetching API Request: ```\n" + e + "\n```", 'HTTPS Stream Interrupt');

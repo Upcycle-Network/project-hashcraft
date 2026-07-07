@@ -28,11 +28,13 @@ module.exports = {
             },
             timeout: 1500
           };
+          let timeoutLock = false;
           https.get(options, (res) => {
             if (res.statusCode !== 200) return errorHandler.APIError(interaction, "Transaction cannot be completed. Please try again later.", `Error Code: ${res.statusCode}`);
             let data = "";
             res.on("data", (chunk) => data += chunk);
             res.on("end", async () => {
+              if (timeoutLock) return;
               try {
                 const json = JSON.parse(data);
                 if (!json.success) return errorHandler.APIError(interaction, 'Deposit Failed', 'DUCO  API Error');
@@ -42,11 +44,14 @@ module.exports = {
                   deposit.setAuthor({ name: `${process.env.BOT_NAME} Faucet`, iconURL: process.env.SUCCESS }).setTitle("Deposit Successful").setColor(0x00ff00).setDescription(`Successfully converted \`⧈${dep}\` into \`${dep / 100} ↁ\` and sent to Account: ${recip}\nTxID: [${txid}](https://explorer.duinocoin.com?search=${txid})`).setTimestamp();
                   if (process.env.DEFER === '1') await interaction.editReply({ embeds: [deposit] }); else await interaction.reply({ embeds: [deposit] });
                 });
-              } catch (e) {
+              } catch (e) {if (timeoutLock) return;
                 return errorHandler.APIError(interaction, 'Deposit Failed', 'JSON parse fail');
               }
             });
-          }).on('timeout', async () => { return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout'); })
+          }).on('timeout', async () => {
+            timeoutLock = true;
+            return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout');
+          })
             .on("error", async (e) => { return errorHandler.APIError(interaction, 'Deposit Failed', e.code); });
         } catch (e) {
           console.log(e);
@@ -67,7 +72,8 @@ module.exports = {
           headers: {
             'Content-Type': 'application/json',
             'Content-Length': transactionMessage.length
-          }
+          },
+          timeout: 1500
         }
         https.request(options, async (res) => {
           if (res.statusCode !== 200 && res.statusCode !== 201) return errorHandler.APIError(interaction, "Transaction node is unreachable. Please try again later.", `Error Code: ${res.statusCode}`);

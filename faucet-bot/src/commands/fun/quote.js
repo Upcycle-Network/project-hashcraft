@@ -18,11 +18,13 @@ module.exports = {
         },
         timeout: 1500
       };
+      let timeoutLock = false;
       https.get(options, async (res) => {
         if (res.statusCode !== 200) return errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
         let data = "";
         res.on("data", (chunk) => data += chunk);
         res.on("end", async () => {
+          if (timeoutLock) return;
           try {
             const json = JSON.parse(data);
             quote.setThumbnail(json.author.imageUrl).setDescription(`${json.text}\n~${json.author.name}`).setFooter({ text: 'Powered by: ' + apidata[0].name, iconURL: process.env.ICON }).setTimestamp();
@@ -32,6 +34,7 @@ module.exports = {
           }
         });
       }).on('timeout', async () => {
+        timeoutLock = true;
         return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout');
       }).on("error", async (e) => {
         return errorHandler.APIError(interaction, "Error while fetching API Request: ```\n" + e + "\n```", 'HTTPS Stream Interrupt');

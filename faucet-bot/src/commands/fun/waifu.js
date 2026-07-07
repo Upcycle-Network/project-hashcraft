@@ -18,7 +18,7 @@ module.exports = {
                 headers: {
                     'User-Agent': `${process.env.BOT_NAME} ${interaction.client.version}`
                 },
-                timeout: 5
+                timeout: 1500
             };
             let timeoutLock = false;
             http.get(options, async (res) => {

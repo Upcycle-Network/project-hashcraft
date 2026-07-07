@@ -27,11 +27,13 @@ module.exports = {
             },
             timeout: 1500
           };
+          let timeoutLock = false;
           http.get(options, async (res) => {
             if (res.statusCode !== 200) return errorHandler.APIError(interaction, "Wallet name cannot be verified. Please try again in some time.", `Error Code: ${res.statusCode}`);
             var data = '';
             res.on("data", (chunk) => data += chunk);
             res.on("end", async () => {
+              if (timeoutLock) return;
               try {
                 const jsonData = JSON.parse(data);
                 if (!jsonData.success) return errorHandler.customErrorMessage(interaction, "Link Wallet", "Error: " + String(jsonData.message), process.env.BOT_NAME);
@@ -76,7 +78,10 @@ module.exports = {
                 return errorHandler.APIError(interaction, "Wallet name cannot be verified. Please try again in some time.", "JSON parse fail");
               }
             });
-          }).on('timeout', async () => { return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout'); })
+          }).on('timeout', async () => {
+            timeoutLock = true;
+            return errorHandler.APIError(interaction, "Error while fetching API Request: ```\nETIMEDOUT\n```", 'Connection timeout');
+          })
             .on("error", async (e) => { return errorHandler.APIError(interaction, 'Transaction node deposit failed', e.code); });
         } catch (e) {
           return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
