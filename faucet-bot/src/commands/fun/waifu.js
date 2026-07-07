@@ -24,7 +24,8 @@ module.exports = {
                 if (res.statusCode !== 200) return errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`);
                 let data = "";
                 res.on("data", (chunk) => { data += chunk; });
-                res.on("end", async () => {
+                res.on("end", async (parameters) => {
+                    console.log(parameters);
                     try {
                         const json = JSON.parse(data);
                         waifu.setTimestamp().setFooter({ text: 'Powered by: ' + apidata[i].name, iconURL: process.env.ICON });
