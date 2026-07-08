@@ -1,9 +1,9 @@
 const https = require("https");
 const process = require("process");
 const fs = require("fs");
-const [eventType = 'default', start = 'false'] = process.argv.slice(2);
+const [eventType = 'default', start = 'false', epoch = 0] = process.argv.slice(2);
 const formattedBoolean = start.toLowerCase() === 'true';
-const postData = JSON.stringify({ "event": eventType, "key": process.env.EVENT_KEY, "start": formattedBoolean });
+const postData = JSON.stringify({"epoch": epoch, "event": eventType, "key": process.env.EVENT_KEY, "start": formattedBoolean });
 const options = {
   hostname: process.env.EVENT_IP,
   port: process.env.EVENT_PORT,

@@ -28,7 +28,6 @@ module.exports = {
             if (process.env.DEFER === '1') await interaction.editReply({ embeds: [claimbox] }); else await interaction.reply({ embeds: [claimbox] });
             break;
           default:
-            console.log(timediff);
             const prevStreak = streak;
             streak = (timediff === 1) ? (streak + 1) : 1;
             const drop = calculateDrop(streak);

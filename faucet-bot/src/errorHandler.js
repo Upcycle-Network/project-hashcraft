@@ -12,7 +12,8 @@ function getTimestamp() {
 async function sendErrorMessage(interaction, embed, force) {
     return (process.env.DEFER === '1' && force === 0) ? await interaction.editReply({ embeds: [embed] }) : await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
-async function writeToLog(message) {
+async function writeToLog(message, logToConsole) {
+    if (logToConsole) console.log (message);
     const logMessage = `[${getTimestamp()}] ${message}\n`;
     try {
         await asyncfs.appendFile(logPath, logMessage, 'utf8');
@@ -21,7 +22,7 @@ async function writeToLog(message) {
     }
 }
 module.exports = {
-    log: (message) => writeToLog(message),
+    log: (message, logToConsole = 0) => writeToLog(message, logToConsole),
     rotateLog: async function () {
         try {
             const stats = await asyncfs.stat(logPath);

@@ -54,7 +54,6 @@ module.exports = {
           })
             .on("error", async (e) => { return errorHandler.APIError(interaction, 'Deposit Failed', e.code); });
         } catch (e) {
-          console.log(e);
           return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail");
         }
       } else {

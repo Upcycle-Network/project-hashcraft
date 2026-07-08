@@ -64,9 +64,9 @@ for (const folder of commandFolders) {
     for (const file of commandFiles) {
       const command = require(path.join(commandsPath, file));
       if ('data' in command && 'execute' in command) client.commands.set(path.basename(file, path.extname(file)), command);
-      else console.warn(`[WARNING] The command at ${path.join(commandsPath, file)} is missing a required "execute" or "data" property.`);
+      else errorHandler.log(`[WARNING] The command at ${path.join(commandsPath, file)} is missing a required "execute" or "data" property.`, 1);
     }
-  } else console.log(`[INFO] The command directory ${folder} is empty, skipping.`);
+  } else errorHandler.log(`[INFO] The command directory ${folder} is empty, skipping.`, 1);
 }
 const index = new EmbedBuilder();
 client.on(Events.InteractionCreate, async (mainInteraction) => {
@@ -91,17 +91,17 @@ client.on(Events.InteractionCreate, async (mainInteraction) => {
     }
     if (mainInteraction.commandName !== 'restart') setTimeout(() => client.user.setPresence({ status: 'idle' }), 5000);
   } catch (error) {
-    console.log(error);
+    errorHandler.log(error);
     index.setTitle("Error executing command").setDescription(`There was an error executing the command\nLog: \n\`\`\`${error}\n\`\`\``).setColor(0xff0000).setFooter({ text: mainInteraction.guild.name, iconURL: mainInteraction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();
     if (mainInteraction.replied || mainInteraction.deferred) await mainInteraction.followUp({ embeds: [index], flags: MessageFlags.Ephemeral });
     else await mainInteraction.reply({ embeds: [index], flags: MessageFlags.Ephemeral });
   }
 });
-console.log("Connecting...");
+errorHandler.log("[INFO] Connecting to Discord API...", 1);
 client.once(Events.ClientReady, async (c) => {
   process.env.RESTART_FLAG = '0';
   process.env.INFORM_LOCK = '0';
-  console.log("Hashcraft Discord bot is online.");
+  errorHandler.log("[INFO] Hashcraft Discord bot is online.", 1);
   client.user.setPresence({
     activities: [{
       name: '/help',
@@ -139,7 +139,7 @@ https.createServer(HTTPS_options, async (req, res) => {
             index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#${process.env.BOT_CHANNEL}> to claim your daily drop.`).setFooter({ text: `v${client.version}`, iconURL: process.env.ICON }).setTimestamp();
             const uid = result[0].userid;
             client.db.query(`update Faucet set reminder = ? where userid = ?`, [date, uid], (err) => {
-              if (err) return console.error("Could not update reminder date for user " + uid);
+              if (err) return errorHandler.log("Could not update reminder date for user " + uid, 1);
             });
             if ((result[0].flags & 1) === 1) return errorHandler.eventAPIMessage(res, `User ${uid} has turned off DM Notifications.`, 1, eventType);
             try {
@@ -154,10 +154,11 @@ https.createServer(HTTPS_options, async (req, res) => {
             }
           });
           break;
+        case 'ping': return errorHandler.eventAPIMessage(res, `[${Date.now() - apiData.epoch}ms]`, 1, 'PING');
         default: return errorHandler.eventAPIMessage(res, 'Default event triggered', 1, 'DEFAULT');
       }
     } catch (e) {
       return errorHandler.eventAPIMessage(res, `Error parsing event data`, 1, 'ERR');
     }
   });
-}).listen(process.env.EVENT_PORT, () => console.log(`[INFO] Events API listening on port ${process.env.EVENT_PORT}.`));
+}).listen(process.env.EVENT_PORT, () => errorHandler.log(`[INFO] Events API listening on port ${process.env.EVENT_PORT}.`, 1),);
