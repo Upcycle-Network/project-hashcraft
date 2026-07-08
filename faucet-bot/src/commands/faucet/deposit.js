@@ -12,7 +12,7 @@ module.exports = {
     interaction.client.db.query(`select mdu_bal, wallet_name from Faucet where userid = ?`, [userid], async function (err, result) {
       if (err) return errorHandler.dbQueryError(interaction, 'Error', err);
       const bal = result[0].mdu_bal;
-      const dep = interaction.options.get("amount").value;
+      const dep = (process.env.MAINTENANCE_MODE === 'beta') ? 1 : interaction.options.get("amount").value;
       const recip = result[0].wallet_name;
       if (recip === null) return errorHandler.customErrorMessage(interaction, 'Account not linked yet', `You haven't linked your Duino-Coin Account to this discord user. Run /link to do so.`, process.env.BOT_NAME);
       if (bal < dep) return errorHandler.customErrorMessage(interaction, `You don't have enough mDU!`, "Current balance: ⧈" + bal, process.env.BOT_NAME);
