@@ -16,15 +16,27 @@ This faucet uses an in-system currency called mDU (Symbol: ⧈). The current con
 6. You can also view a bunch of other DuinoCoin Faucets simply using the command `/faucetlist`.
 7. Send Duco to other wallets using `/pay`.
 8. Use `/leaderboard` to view all the top users of the faucet.
+9. Many commands to use for entertainment!
 
 # Documentation
 
 ## Adding your own faucets to the bot
 Edit the file named `faucetlist.json` that can be found in the `faucet-bot` directory. Follow the exact template as the previous records and check whether the JSON matches the syntax. Make sure your faucet is tested properly, and create a pull request.
 
+## Environment Variables
+There are specific application flags to be modified in the .env file. see .env.example.
+`DEFER` = {0, 1}
+- Define whether or not all messages will be deferred (for slower connections)
+`MAINTENANCE_MODE` = {false, true, beta, lockdown}
+- false => all commands enabled
+- true => /deposit disabled
+- beta => /deposit will always deposit 1
+- lockdown => all commands disabled
+`TXN_HANDLER` = {self, 'hostname'}
+- self => local transaction processing, else put the path of the external node
 
 ## DB Flag String
 The flags column of the database stores the user-specific boolean type settings for the bot.
 It is an integer converted into binary string and the character position determines the flag status
 
-POS 0 => Notifications flag: 1 = Notifs on, 0 = Notifs off
+- Bit 0 => Notifications flag: 1 = Notifs on, 0 = Notifs off
