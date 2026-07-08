@@ -154,7 +154,7 @@ https.createServer(HTTPS_options, async (req, res) => {
             }
           });
           break;
-        case 'ping': return errorHandler.eventAPIMessage(res, `[${Date.now() - apiData.epoch}ms]`, 1, 'PING');
+        case 'ping': return errorHandler.eventAPIMessage(res, `[${Date.now() - Number(apiData.epoch)}ms]`, 1, 'PING');
         default: return errorHandler.eventAPIMessage(res, 'Default event triggered', 1, 'DEFAULT');
       }
     } catch (e) {

@@ -4,7 +4,6 @@ const fs = require("fs");
 const [eventType = 'default', start = 'false', epoch = ''] = process.argv.slice(2);
 const formattedBoolean = start.toLowerCase() === 'true';
 const postData = JSON.stringify({"epoch": epoch, "event": eventType, "key": process.env.EVENT_KEY, "start": formattedBoolean });
-return console.log(postData);
 const options = {
   hostname: process.env.EVENT_IP,
   port: process.env.EVENT_PORT,
