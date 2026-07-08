@@ -25,13 +25,16 @@ Edit the file named `faucetlist.json` that can be found in the `faucet-bot` dire
 
 ## Environment Variables
 There are specific application flags to be modified in the .env file. see .env.example.
+
 `DEFER` = {0, 1}
 - Define whether or not all messages will be deferred (for slower connections)
+
 `MAINTENANCE_MODE` = {false, true, beta, lockdown}
 - false => all commands enabled
 - true => /deposit disabled
 - beta => /deposit will always deposit 1
 - lockdown => all commands disabled
+
 `TXN_HANDLER` = {self, 'hostname'}
 - self => local transaction processing, else put the path of the external node
 
