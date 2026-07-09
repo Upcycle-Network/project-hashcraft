@@ -7,9 +7,9 @@ function format(mb) {
 }
 function timeFormat(time) {
   time = Math.round(time);
-  if (time >= 60 && time < 3600) return `${Math.floor(time / 60)} minutes and ${time % 60} seconds`;
+  if (time >= 86400) return `${Math.floor(time / 86400)} days, ${Math.floor((time % 86400) / 3600)} hours`;
   else if (time >= 3600) return `${Math.floor(time / 3600)} hours, ${Math.floor((time % 3600) / 60)} minutes and ${(time % 3600) % 60} seconds`;
-  else if (time >= 86400) return `${Math.floor(time / 86400)} days, ${Math.floor((time % 86400) / 3600)} hours`;
+  else if (time >= 60) return `${Math.floor(time / 60)} minutes and ${time % 60} seconds`;
   return `${time} seconds`;
 }
 module.exports = {
