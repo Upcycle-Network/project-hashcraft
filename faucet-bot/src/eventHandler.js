@@ -13,12 +13,17 @@ const options = {
   headers: {
     'Content-Type': 'application/json',
     'Content-Length': Buffer.byteLength(postData)
-  }
+  },
+  timeout: 5000
 }
 const req = https.request(options, (res) => {
   let responseData = '';
   res.on('data', (chunk) => responseData += chunk);
   res.on('end', () => console.log('Response:', responseData));
+}).on('timeout', () => {
+  console.error('Request Timed out.');
+  req.destroy();
+  process.exit(1);
 }).on('error', (error) => console.error('Error:', error));
 req.write(postData);
 req.end();
