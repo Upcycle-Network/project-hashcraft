@@ -133,7 +133,7 @@ https.createServer(HTTPS_options, async (req, res) => {
                 process.env.INFORM_LOCK = '1';
                 return errorHandler.eventAPIMessage(res, 'No Users to notify.', 1, eventType);
               }
-              return;
+              return errorHandler.eventAPIMessage(res, 'No Users to notify.', 1, eventType, 1);
             }
             process.env.INFORM_LOCK = '0';
             index.setTitle("Reminder to claim!").setColor(0x00ff00).setDescription(`You might lose your streak of \`${result[0].streak}\` 🔥!\nHead on over to <#${process.env.BOT_CHANNEL}> to claim your daily drop.`).setFooter({ text: `v${client.version}`, iconURL: process.env.ICON }).setTimestamp();

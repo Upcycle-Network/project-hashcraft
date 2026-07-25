@@ -12,7 +12,7 @@ function getTimestamp() {
 async function sendErrorMessage(interaction, embed, force) {
     return (process.env.DEFER === '1' && force === 0) ? await interaction.editReply({ embeds: [embed] }) : await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
-async function writeToLog(message, logToConsole) {
+async function writeToLog(message, logToConsole = 0) {
     if (logToConsole) console.log (message);
     const logMessage = `[${getTimestamp()}] ${message}\n`;
     try {
@@ -36,34 +36,29 @@ module.exports = {
             input.pipe(gzip).pipe(output);
             output.on('pipe', () => process.env.REDIRECT = '1');
             input.on('error', (err) => {
-                writeToLog(`[ERROR] Read stream error during log rotation ${err.message}`);
-                return console.error(`Read error: ${err.message}`);
+                return writeToLog(`[ERROR] Read stream error during log rotation ${err.message}`, 1);
             });
             gzip.on('error', (err) => {
-                writeToLog(`[ERROR] Compression error during log rotation ${err.message}`);
-                return console.error(`Compression error: ${err.message}`);
+                return writeToLog(`[ERROR] Compression error during log rotation ${err.message}`, 1);
             });
             output.on('error', (err) => {
-                writeToLog(`[ERROR] Write stream error during log rotation ${err.message}`);
-                return console.error(`Write error: ${err.message}`);
+                return writeToLog(`[ERROR] Write stream error during log rotation ${err.message}`, 1);
             });
             output.on('finish', () => {
                 console.log("[INFO] Log " + outputPath + " compressed for rotation");
                 fs.writeFile(logPath, '', (err) => {
                     if (err) return console.error("Log file could not be deleted");
                     process.env.REDIRECT = '0';
-                    writeToLog("[INFO] New log file start")
-                    return console.log("New log file start");
+                    return writeToLog("[INFO] New log file start", 1)
                 })
             });
         } catch (e) {
             process.env.REDIRECT = '0';
-            writeToLog("[ERROR] Log file rotation failed");
-            return console.error("Log file could not be read for rotation");
+            return writeToLog("[ERROR] Log file rotation failed", 1);
         }
     },
-    eventAPIMessage: async function (response, message, sendHeaderFlag, logType) {
-        if (process.env.REDIRECT === '0') writeToLog(`EVENT_${logType}: ${message}`);
+    eventAPIMessage: async function (response, message, sendHeaderFlag, logType, noLog = 0) {
+        if (process.env.REDIRECT === '0' && !noLog) writeToLog(`EVENT_${logType}: ${message}`, 0);
         if (sendHeaderFlag) response.writeHead(200, { 'Content-Type': 'text/plain' });
         response.write(message);
         response.end();
