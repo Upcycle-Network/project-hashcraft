@@ -5,6 +5,7 @@ const https = require("https");
 const fs = require("fs")
 const path = require("path");
 const errorHandler = require(__dirname + "/errorHandler");
+errorHandler.log("============================[APPLICATION BOOT]============================");
 const pkg = require(__dirname + "/../package.json");
 const diagnosticsChannel = require("diagnostics_channel");
 const querylogger = diagnosticsChannel.tracingChannel('mysql2:query');
