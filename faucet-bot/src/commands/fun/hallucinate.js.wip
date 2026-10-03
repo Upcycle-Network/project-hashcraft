@@ -1,4 +1,4 @@
-const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const process = require("process");
 const https = require("https");
 const errorHandler = require(__dirname + '/../../errorHandler.js');
@@ -27,10 +27,10 @@ module.exports = {
                     'Content-Type': 'application/json',
                     'Content-Length': Buffer.byteLength(postData)
                 },
-                timeout: (process.env.DEFER === '1') ? 30000 : 2000
+                timeout: 30000
             };
             let timeoutLock = false;
-            const req = https.request(options, async (res) => {
+            https.request(options, async (res) => {
                 res.setEncoding('utf8');
                 if (res.statusCode !== 200) return errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`, 1);
                 let data = "";
