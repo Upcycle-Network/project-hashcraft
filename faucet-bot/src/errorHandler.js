@@ -9,8 +9,8 @@ process.env.REDIRECT = '0';
 function getTimestamp() {
     return new Date().toISOString().split('.')[0].replace(/:/g, '-').replace('T', ' ').replace('Z', '');
 }
-async function sendErrorMessage(interaction, embed, force) {
-    return (process.env.DEFER === '1' && force === 0) ? await interaction.editReply({ embeds: [embed] }) : await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
+async function sendErrorMessage(interaction, embed, force = 0, forceDefer = 0) {
+    return ((process.env.DEFER === '1' && !force) || forceDefer) ? await interaction.editReply({ embeds: [embed] }) : await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 }
 async function writeToLog(message, logToConsole = 0) {
     if (logToConsole) console.log (message);
@@ -63,13 +63,13 @@ module.exports = {
         response.write(message);
         response.end();
     },
-    dbQueryError: async function (interaction, title, err) {
+    dbQueryError: async function (interaction, title, err, forceDefer = 0) {
         const error = new EmbedBuilder().setTitle(title).setDescription("DB Query Failed, Error Message: \n\`\`\`\n" + err + "\n\`\`\`\nPlease try again.").setAuthor({ name: process.env.BOT_NAME, iconURL: process.env.FAIL }).setColor(0xff0000).setFooter({ text: process.env.BOT_NAME, iconURL: interaction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();
-        sendErrorMessage(interaction, error, 0);
+        sendErrorMessage(interaction, error, 0, forceDefer);
     },
-    APIError: async function (interaction, description, reason) {
+    APIError: async function (interaction, description, reason, forceDefer = 0) {
         const error = new EmbedBuilder().setTitle("API Server Error").setDescription(description).setAuthor({ name: process.env.BOT_NAME, iconURL: process.env.FAIL }).setColor(0xff0000).setFooter({ text: reason, iconURL: interaction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();
-        sendErrorMessage(interaction, error, 0);
+        sendErrorMessage(interaction, error, 0, forceDefer);
     },
     wrongUserError: async function (interaction) {
         const error = new EmbedBuilder().setTitle("Unauthorized Interaction").setDescription("This command is not for you!").setAuthor({ name: process.env.BOT_NAME, iconURL: process.env.FAIL }).setColor(0xff0000).setFooter({ text: process.env.BOT_NAME, iconURL: interaction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();
@@ -79,9 +79,9 @@ module.exports = {
         const error = new EmbedBuilder().setTitle("Wrong Channel").setDescription(`Please run this command in <#${process.env.BOT_CHANNEL}>`).setAuthor({ name: process.env.BOT_NAME, iconURL: process.env.FAIL }).setColor(0xff0000).setFooter({ text: process.env.BOT_NAME, iconURL: interaction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();
         sendErrorMessage(interaction, error, 0);
     },
-    customErrorMessage: async function (interaction, title, description, footerText) {
+    customErrorMessage: async function (interaction, title, description, footerText, forceDefer = 0) {
         const error = new EmbedBuilder().setTitle(title).setDescription(description).setAuthor({ name: process.env.BOT_NAME, iconURL: process.env.FAIL }).setColor(0xff0000).setFooter({ text: footerText, iconURL: interaction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();
-        sendErrorMessage(interaction, error, 0);
+        sendErrorMessage(interaction, error, 0, forceDefer);
     },
     lowBalanceError: async function (interaction, userbal) {
         const error = new EmbedBuilder().setTitle("You don't have enough ⧈ mDU!").setDescription(`Current Balance: \`⧈${userbal}\``).setAuthor({ name: process.env.BOT_NAME, iconURL: process.env.FAIL }).setColor(0xff0000).setFooter({ text: process.env.BOT_NAME, iconURL: interaction.guild.iconURL({ dynamic: true, size: 32 }) }).setTimestamp();

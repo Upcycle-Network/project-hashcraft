@@ -4,7 +4,14 @@
         {
             "name": "DuinoCoin API",
             "host": "server.duinocoin.com",
-            "endpoints": ["/v2/users/", "/transaction/?username=", "&password=", "&recipient=", "&amount=", "&memo=HashCraft Faucet https://discord.gg/vH8fxYZcr8"]
+            "endpoints": [
+                "/v2/users/",
+                "/transaction/?username=",
+                "&password=",
+                "&recipient=",
+                "&amount=",
+                "&memo=HashCraft Faucet https://discord.gg/vH8fxYZcr8"
+            ]
         }
     ],
     "buzzwords": [
@@ -85,6 +92,20 @@
             "host": "insult.mattbas.org",
             "endpoints": [
                 "/api/en/insult.json"
+            ]
+        }
+    ],
+    "hallucinate": [
+        {
+            "thumbnail": "https://ih1.redbubble.net/image.5591827580.1057/raf,360x360,075,t,fafafa:ca443f4786.webp",
+            "onError": "https://i.pinimg.com/236x/e1/3b/85/e13b85edf3f13afa17a0577cf76ec26b.jpg"
+        },
+        {
+            "name": "Tiny-LLM 10M",
+            "host": "localhost",
+            "port" : "8082",
+            "endpoints": [
+                "/v1/chat/completions"
             ]
         }
     ],

@@ -1,0 +1,61 @@
+const { SlashCommandBuilder, EmbedBuilder, MessageFlags } = require("discord.js");
+const process = require("process");
+const https = require("https");
+const errorHandler = require(__dirname + '/../../errorHandler.js');
+const hallucinate = new EmbedBuilder().setTitle("Hashcraft AI").setColor(0xf18701);
+module.exports = {
+    data: new SlashCommandBuilder().setName('hallucinate').setDescription("Generate 100% hallucinated text from our cutting-edge AI model").addStringOption(option => option.setName("prompt").setDescription("Enter your prompt").setRequired(true)),
+    execute: async function (interaction) {
+        interaction.deferReply();
+        try {
+            const endpoint = require(__dirname + '/../../../apiList.json');
+            const apidata = endpoint.hallucinate;
+            const postData = JSON.stringify({
+                messages: [
+                    { role: "user", content: interaction.options.get("prompt").value }
+                ],
+                temperature: 0.8,
+                stream: false
+            });
+            const options = {
+                hostname: apidata[1].host,
+                port: apidata[1].port,
+                path: apidata[1].endpoints[0],
+                method: 'POST',
+                headers: {
+                    'User-Agent': `${process.env.BOT_NAME} ${interaction.client.version}`,
+                    'Content-Type': 'application/json',
+                    'Content-Length': Buffer.byteLength(postData)
+                },
+                timeout: (process.env.DEFER === '1') ? 30000 : 2000
+            };
+            let timeoutLock = false;
+            const req = https.request(options, async (res) => {
+                res.setEncoding('utf8');
+                if (res.statusCode !== 200) return errorHandler.APIError(interaction, apidata[1].name + " unreachable, please try again later.", `Error Code: ${res.statusCode}`, 1);
+                let data = "";
+                res.on("data", (chunk) => data += chunk);
+                res.on("end", async () => {
+                    if (timeoutLock) return;
+                    try {
+                        const rawData = JSON.parse(data);
+                        const json = data;
+                        hallucinate.setThumbnail(apidata[0].thumbnail).setDescription(json).setFooter({ text: 'Powered by: ' + apidata[1].name, iconURL: process.env.ICON }).setTimestamp();
+                        await interaction.editReply({ embeds: [hallucinate] });
+                    } catch (e) {
+                        return errorHandler.APIError(interaction, "An unexpected error occurred. Please try again later.", 'JSON parse fail', 1)
+                    }
+                });
+            }).on('timeout', async () => {
+                timeoutLock = true;
+                hallucinate.setThumbnail(apidata[0].onError).setDescription("Error while fetching API Request: ```\nETIMEDOUT\n```").setColor(0xff0000).setTimestamp();
+                await interaction.editReply({ embeds: [hallucinate] });
+            }).on("error", async (e) => {
+                hallucinate.setThumbnail(apidata[0].onError).setDescription("Error while fetching API Request: ```\n" + e + "\n```").setColor(0xff0000).setTimestamp();
+                await interaction.editReply({ embeds: [hallucinate] });
+            });
+        } catch (e) {
+            return errorHandler.customErrorMessage(interaction, "API List Error", "The API List JSON file has incorrect syntax.\n[Report the issue](https://github.com/Upcycle-Network/project-hashcraft)", "JSON parse fail", 1);
+        }
+    }
+}
